@@ -45,7 +45,7 @@ class ServerRequest implements ServerRequestInterface
 
 	/**
 	 * List of request body parsers (e.g., url-encoded, JSON, XML, multipart)
-	 * @var callable[]
+	 * @var mixed[]
 	 */
 	private array $bodyParsers = [];
 
@@ -145,20 +145,14 @@ class ServerRequest implements ServerRequestInterface
 			return $result;
 		});
 
+		/*
 		$xmlParser = function ($input) {
 			$backup = true;
-			if (PHP_VERSION_ID < 80000) {
-				$backup =  libxml_disable_entity_loader(true);
-			}
 
 			$backup_errors = libxml_use_internal_errors(true);
 
 			$result = simplexml_load_string($input);
 			libxml_disable_entity_loader($backup);
-
-			if (PHP_VERSION_ID < 80000) {
-				libxml_disable_entity_loader($backup);
-			}
 
 			libxml_clear_errors();
 			libxml_use_internal_errors($backup_errors);
@@ -169,9 +163,9 @@ class ServerRequest implements ServerRequestInterface
 
 			return $result;
 		};
-
-		$this->registerMediaTypeParser(MediaType::TEXT_XML, $xmlParser);
-		$this->registerMediaTypeParser(MediaType::APP_XML, $xmlParser);
+		 */
+		//$this->registerMediaTypeParser(MediaType::TEXT_XML, $xmlParser);
+		//$this->registerMediaTypeParser(MediaType::APP_XML, $xmlParser);
 		$this->registerMediaTypeParser(MediaType::FORM_URLENCODED, function ($input) {
 			parse_str($input, $data);
 			return $data;
@@ -209,9 +203,11 @@ class ServerRequest implements ServerRequestInterface
 	 */
 	public function registerMediaTypeParser(string $mediaType, callable $callable): void
 	{
+		/*
 		if ($callable instanceof Closure) {
 			$callable = $callable->bindTo($this);
 		}
+		 */
 
 		$this->bodyParsers[$mediaType] = $callable;
 	}
@@ -399,7 +395,7 @@ class ServerRequest implements ServerRequestInterface
 	 * immutability of the message, and MUST return an instance that has the
 	 * updated body parameters.
 	 *
-	 * @param null|array|object $data The deserialized body data. This will
+	 * @param null|array|mixed $data The deserialized body data. This will
 	 *     typically be in an array or object.
 	 * @return static
 	 * @throws InvalidArgumentException if an unsupported argument type is
@@ -604,8 +600,8 @@ class ServerRequest implements ServerRequestInterface
 	 */
 	public function setAttributes(array $values): self
 	{
-		$this->attributes->replace($values);
-
+		//$this->attributes->replace($values);
+		$this->attributes->sets($values);
 		return $this;
 	}
 

@@ -41,7 +41,7 @@ class Stream implements StreamInterface
 	/**
 	 * The underlying stream resource
 	 *
-	 * @var resource
+	 * @var mixed
 	 */
 	protected $stream;
 
@@ -87,10 +87,11 @@ class Stream implements StreamInterface
 	 */
 	protected ?bool $isPipe = NULL;
 
+
 	/**
 	 * Create a new Stream.
 	 *
-	 * @param  resource $stream A PHP resource handle.
+	 * @param  mixed $stream A PHP resource handle.
 	 *
 	 * @throws InvalidArgumentException If argument is not a resource.
 	 */
@@ -115,12 +116,14 @@ class Stream implements StreamInterface
 	 */
 	public function getMetadata($key = null): mixed
 	{
-		$this->meta = \stream_get_meta_data($this->stream);
-		if (null === $key) {
-			return $this->meta;
-		}
+		//$this->meta = \stream_get_meta_data($this->stream);
+		//if (null === $key) {
+		//	return $this->meta;
+		//}
 
-		return $this->meta[$key] ?? null;
+		//return $this->meta[$key] ?? null;
+
+		return NULL;
 	}
 
 	/**
@@ -132,21 +135,28 @@ class Stream implements StreamInterface
 	 */
 	protected function isAttached(): bool
 	{
-		return is_resource($this->stream);
+		return $this->is_resource($this->stream);
 	}
+
+	protected function is_resource(mixed $a) : bool {
+
+		if (!is_null($a) && ! is_object($a) && ! is_numeric($a) && ! is_string($a) && ! is_bool($a) && ! is_array($a)) return TRUE;
+		return FALSE;
+	}
+
 
 	/**
 	 * Attach new resource to this object.
 	 *
 	 * Note: This method is not part of the PSR-7 standard.
 	 *
-	 * @param resource $newStream A PHP resource handle.
+	 * @param mixed $newStream A PHP resource handle.
 	 *
 	 * @throws InvalidArgumentException If argument is not a valid PHP resource.
 	 */
 	protected function attach($newStream): void
 	{
-		if (is_resource($newStream) === false) {
+		if ($this->is_resource($newStream) === false) {
 			throw new InvalidArgumentException(__METHOD__ . ' argument must be a valid PHP resource');
 		}
 
@@ -162,7 +172,7 @@ class Stream implements StreamInterface
 	 *
 	 * After the stream has been detached, the stream is in an unusable state.
 	 *
-	 * @return resource|null Underlying PHP stream, if any
+	 * @return mixed|null Underlying PHP stream, if any
 	 */
 	public function detach()
 	{
@@ -213,7 +223,8 @@ class Stream implements StreamInterface
 	{
 		if ($this->isAttached() === true) {
 			if ($this->isPipe()) {
-				pclose($this->stream);
+				//pclose($this->stream);
+				unset($this->stream);
 			} else {
 				fclose($this->stream);
 			}
@@ -229,12 +240,8 @@ class Stream implements StreamInterface
 	 */
 	public function getSize(): ?int
 	{
-		if (!$this->size && $this->isAttached() === true) {
-			$stats      = fstat($this->stream);
-			$this->size = isset($stats['size']) && !$this->isPipe() ? $stats['size'] : null;
-		}
 
-		return $this->size;
+		return NULL;
 	}
 
 	/**
@@ -444,10 +451,13 @@ class Stream implements StreamInterface
 		if ($this->isPipe === null) {
 			$this->isPipe = false;
 
+			// FIXME
+			/*
 			if ($this->isAttached()) {
 				$mode         = fstat($this->stream)['mode'];
 				$this->isPipe = ($mode & self::FSTAT_MODE_S_IFIFO) !== 0;
 			}
+			 */
 		}
 
 		return $this->isPipe;

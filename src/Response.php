@@ -147,6 +147,72 @@ class Response implements ResponseInterface
 		return new static($status, $headers, $cookies, $body, $protocol, $protocolVersion);
 	}
 
+	private     function mime_content_type($filename) {
+
+		$mime_types = array(
+
+			'txt' => 'text/plain',
+			'htm' => 'text/html',
+			'html' => 'text/html',
+			'php' => 'text/html',
+			'css' => 'text/css',
+			'js' => 'application/javascript',
+			'json' => 'application/json',
+			'xml' => 'application/xml',
+			'swf' => 'application/x-shockwave-flash',
+			'flv' => 'video/x-flv',
+
+			// images
+			'png' => 'image/png',
+			'jpe' => 'image/jpeg',
+			'jpeg' => 'image/jpeg',
+			'jpg' => 'image/jpeg',
+			'gif' => 'image/gif',
+			'bmp' => 'image/bmp',
+			'ico' => 'image/vnd.microsoft.icon',
+			'tiff' => 'image/tiff',
+			'tif' => 'image/tiff',
+			'svg' => 'image/svg+xml',
+			'svgz' => 'image/svg+xml',
+
+			// archives
+			'zip' => 'application/zip',
+			'rar' => 'application/x-rar-compressed',
+			'exe' => 'application/x-msdownload',
+			'msi' => 'application/x-msdownload',
+			'cab' => 'application/vnd.ms-cab-compressed',
+
+			// audio/video
+			'mp3' => 'audio/mpeg',
+			'qt' => 'video/quicktime',
+			'mov' => 'video/quicktime',
+
+			// adobe
+			'pdf' => 'application/pdf',
+			'psd' => 'image/vnd.adobe.photoshop',
+			'ai' => 'application/postscript',
+			'eps' => 'application/postscript',
+			'ps' => 'application/postscript',
+
+			// ms office
+			'doc' => 'application/msword',
+			'rtf' => 'application/rtf',
+			'xls' => 'application/vnd.ms-excel',
+			'ppt' => 'application/vnd.ms-powerpoint',
+
+			// open office
+			'odt' => 'application/vnd.oasis.opendocument.text',
+			'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
+		);
+
+		$ext = strtolower(array_pop(explode('.',$filename)));
+		if (array_key_exists($ext, $mime_types)) {
+			return $mime_types[$ext];
+		} else {
+			return 'application/octet-stream';
+		}
+	}
+
 	/**
 	 * Helper to send a file
 	 */
@@ -161,7 +227,7 @@ class Response implements ResponseInterface
 		// Set up necessary headers
 		$fileSize = filesize($filePath);
 		$fileName = basename($filePath);
-		$mimeType = mime_content_type($filePath) ?: 'application/octet-stream';
+		$mimeType = $this->mime_content_type($filePath) ?: 'application/octet-stream';
 
 		$this->withHeader('Content-Description', 'File Transfer')
 	   ->withHeader('Content-Type', $mimeType)
@@ -316,6 +382,8 @@ class Response implements ResponseInterface
 	 */
 	public function json(mixed $data, int $status = null, int $encodingOptions = 0): static
 	{
+		if (!defined('JSON_THROW_ON_ERROR')) define('JSON_THROW_ON_ERROR', 4194304);
+
 		$this->setBody(new Body());
 		$this->write(json_encode($data, JSON_THROW_ON_ERROR | $encodingOptions));
 
@@ -367,10 +435,6 @@ class Response implements ResponseInterface
 	public function withStatus($code, $reasonPhrase = ''): Response|static
 	{
 		$code = $this->filterStatus($code);
-
-		if (!is_string($reasonPhrase) && !method_exists($reasonPhrase, '__toString')) {
-			throw new InvalidArgumentException('ReasonPhrase must be a string');
-		}
 
 		$clone         = clone $this;
 		$clone->status = $code;

@@ -8,11 +8,6 @@
 
 namespace PhpPkg\Http\Message\Traits;
 
-use InvalidArgumentException;
-use PhpPkg\Http\Message\Headers;
-use PhpPkg\Http\Message\Stream;
-use Psr\Http\Message\StreamInterface;
-
 /**
  * Trait MessageTrait
  * @package PhpPkg\Http\Message\Traits
@@ -32,16 +27,16 @@ trait MessageTrait
 	protected string $protocolVersion = '1.1';
 
 	/**
-	 * @var Headers|null
+	 * @var \PhpPkg\Http\Message\Headers|null
 	 */
-	protected ?Headers $headers = null;
+	protected ?\PhpPkg\Http\Message\Headers $headers = null;
 
 	/**
 	 * Body object
 	 *
-	 * @var StreamInterface
+	 * @var \Psr\Http\Message\StreamInterface
 	 */
-	protected StreamInterface $body;
+	protected \Psr\Http\Message\StreamInterface $body;
 
 	/**
 	 * A map of valid protocol versions
@@ -58,24 +53,24 @@ trait MessageTrait
 	 *
 	 * @param string                          $protocol
 	 * @param string                          $protocolVersion
-	 * @param array|Headers|null $headers
-	 * @param string|StreamInterface $body
+	 * @param array|\PhpPkg\Http\Message\Headers|null $headers
+	 * @param string|\Psr\Http\Message\StreamInterface $body
 	 *
-	 * @throws InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 */
 	public function initialize(
 		string $protocol = 'http',
 		string $protocolVersion = '1.1',
-		array|Headers $headers = null,
-		StreamInterface|string $body = 'php://memory'
+		array|PhpPkg\Http\Message\Headers $headers = null,
+		\Psr\Http\Message\StreamInterface|string $body = 'php://memory'
 	): void {
 		$this->protocol        = $protocol ?: 'http';
 		$this->protocolVersion = $protocolVersion ?: '1.1';
 
 		if ($headers) {
-			$this->headers = $headers instanceof Headers ? $headers : new Headers($headers);
+			$this->headers = $headers instanceof \PhpPkg\Http\Message\Headers ? $headers : new \PhpPkg\Http\Message\Headers($headers);
 		} else {
-			$this->headers = new Headers();
+			$this->headers = new \PhpPkg\Http\Message\Headers();
 		}
 
 		$this->body = $this->createBodyStream($body);
@@ -128,12 +123,12 @@ trait MessageTrait
 	/**
 	 * @param $version
 	 * @return static
-	 * @throws InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 */
 	public function withProtocolVersion($version): static
 	{
 		if (!isset(self::$validProtocolVersions[$version])) {
-			throw new InvalidArgumentException(
+			throw new \InvalidArgumentException(
 				'Invalid HTTP version. Must be one of: '
 				. implode(', ', array_keys(self::$validProtocolVersions))
 			);
@@ -239,9 +234,9 @@ trait MessageTrait
 	}
 
 	/**
-	 * @return Headers
+	 * @return \PhpPkg\Http\Message\Headers
 	 */
-	public function getHeadersObject(): Headers
+	public function getHeadersObject(): \PhpPkg\Http\Message\Headers
 	{
 		return $this->headers;
 	}
@@ -261,21 +256,27 @@ trait MessageTrait
 	 * Body
 	 ******************************************************************************/
 
+	private function is_resource(mixed $a) : bool {
+		if (!is_null($a) && ! is_object($a) && ! is_numeric($a) && ! is_string($a) && ! is_bool($a) && ! is_array($a)) return TRUE;
+		return FALSE;
+	} 
+
+
 	/**
-	 * @param resource|string|StreamInterface $body
+	 * @param int|string|\Psr\Http\Message\StreamInterface $body
 	 * @param string                               $mode
 	 *
-	 * @return StreamInterface
-	 * @throws InvalidArgumentException
+	 * @return \Psr\Http\Message\StreamInterface                                                                          
+	 * @throws \InvalidArgumentException
 	 */
-	protected function createBodyStream(mixed $body, string $mode = 'rb'): StreamInterface
+	protected function createBodyStream(mixed $body, string $mode = 'rb'): \Psr\Http\Message\StreamInterface
 	{
-		if ($body instanceof StreamInterface) {
+		if ($body instanceof \Psr\Http\Message\StreamInterface) {
 			return $body;
 		}
 
-		if (!is_string($body) && !is_resource($body)) {
-			throw new InvalidArgumentException(
+		if (!is_string($body) && ! $this->is_resource($body)) {
+			throw new \InvalidArgumentException(
 				'Stream must be a string stream resource identifier, '
 				. 'an actual stream resource, '
 				. 'or a Psr\Http\Message\StreamInterface implementation'
@@ -283,34 +284,29 @@ trait MessageTrait
 		}
 
 		if (is_string($body)) {
-			$error = null;
-			set_error_handler(static function ($e) use (&$error) {
-				$error = $e;
-			}, E_WARNING);
+			//set_error_handler(static function ($errno, $errstr) { throw new \InvalidArgumentException('Invalid stream reference provided: ' . $errstr); }, E_WARNING);
+
 			$body = fopen($body, $mode);
-			restore_error_handler();
 
-			if ($error) {
-				throw new InvalidArgumentException('Invalid stream reference provided');
-			}
+			//restore_error_handler();
+
+			return new \PhpPkg\Http\Message\Stream($body);
 		}
-
-		return new Stream($body);
 	}
 
 	/**
-	 * @return StreamInterface
+	 * @return \Psr\Http\Message\StreamInterface
 	 */
-	public function getBody(): StreamInterface
+	public function getBody(): \Psr\Http\Message\StreamInterface
 	{
 		return $this->body;
 	}
 
 	/**
-	 * @param StreamInterface $body
+	 * @param \Psr\Http\Message\StreamInterface $body
 	 * @return static
 	 */
-	public function setBody(StreamInterface $body): static
+	public function setBody(\Psr\Http\Message\StreamInterface $body): static
 	{
 		$this->body = $body;
 
@@ -318,10 +314,10 @@ trait MessageTrait
 	}
 
 	/**
-	 * @param StreamInterface $body
+	 * @param \Psr\Http\Message\StreamInterface $body
 	 * @return static
 	 */
-	public function withBody(StreamInterface $body): static
+	public function withBody(\Psr\Http\Message\StreamInterface $body): static
 	{
 		// TODO: Test for invalid body?
 		$clone       = clone $this;

@@ -9,7 +9,6 @@
 namespace PhpPkg\Http\Message\Stream;
 
 use PhpPkg\Http\Message\Stream;
-use function fopen;
 
 /**
  * Class FileStream
@@ -17,15 +16,15 @@ use function fopen;
  */
 class FileStream extends Stream
 {
-    /**
-     * Class constructor.
-     * @param string $file
-     * @param string $mode
-     */
-    public function __construct(string $file, string $mode = 'rb+')
-    {
-        $stream = fopen($file, $mode);
+	/**
+	 * Class constructor.
+	 * @param string $file
+	 * @param string $mode
+	 */
+	public function __construct(string $file, string $mode = 'rb+')
+	{
+		$stream = fopen($file, $mode);
 
-        parent::__construct($stream);
-    }
+		parent::__construct($stream);
+	}
 }

@@ -1,38 +1,32 @@
 {
-  "name": "henrywood/kphp-http-message",
-  "type": "library",
-  "description": "http message library adapted to KPHP, implement the PSR7",
-  "keywords": [
-    "library",
-    "tool",
-    "http",
-    "psr7"
-  ],
-  "homepage": "https://github.com/henrywood/kphp-http-message",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Henrik Skov",
-      "email": "henry.wood.dk@gmail.com",
-      "homepage": "https://github.com/henrywood"
-    }
-  ],
-  "require": {
-    "php": ">8.0.0",
-    "toolkit/stdlib": "~2.0",
-    "henrywood/kphp-psr-http-message": "^1.0"
-  },
-  "autoload": {
-    "psr-4": {
-      "PhpPkg\\Http\\Message\\": "src/"
-    }
-  },
-"repositories": [
+	"name": "henrywood/kphp-http-message",
+	"type": "library",
+	"description": "http message library adapted to KPHP, implement the PSR7",
+	"keywords": ["library", "tool", "http", "psr7"],
+	"homepage": "https://github.com/henrywood/kphp-http-message",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Henrik Skov",
+			"email": "henry.wood.dk@gmail.com",
+			"homepage": "https://github.com/henrywood"
+		}
+	],
+	"require": {
+		"php": ">8.0.0",
+		"henrywood/kphp-psr-http-message": "^1.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"PhpPkg\\Http\\Message\\": "src/"
+		}
+	},
+	"repositories": [
 		{
 			"type": "package",
 			"package": {
 				"name": "henrywood/kphp-psr-http-message",
-				"version": "2.0",
+				"version": "1.0",
 				"type": "package",
 				"source": {
 					"url": "git@github.com:henrywood/kphp-psr-http-message.git",
@@ -41,9 +35,9 @@
 				}
 			}
 		}
-],
-  "suggest": {
-    "inhere/php-validate": "Very lightweight data validate tool",
-    "inhere/console": "a lightweight php console application library."
-  }
+	],
+	"suggest": {
+		"inhere/php-validate": "Very lightweight data validate tool",
+		"inhere/console": "a lightweight php console application library."
+	}
 }

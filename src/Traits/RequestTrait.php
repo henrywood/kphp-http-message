@@ -8,11 +8,6 @@
 
 namespace PhpPkg\Http\Message\Traits;
 
-use InvalidArgumentException;
-use PhpPkg\Http\Message\Uri;
-use Psr\Http\Message\UriInterface;
-use RuntimeException;
-
 /**
  * Trait RequestTrait
  * @package PhpPkg\Http\Message\Traits
@@ -39,9 +34,9 @@ trait RequestTrait
 	/**
 	 * The request URI object
 	 *
-	 * @var UriInterface|null
+	 * @var \Psr\Http\Message\UriInterface|null
 	 */
-	private ?UriInterface $uri = null;
+	private ?\Psr\Http\Message\UriInterface $uri = null;
 
 	/**
 	 * Valid request methods
@@ -60,16 +55,16 @@ trait RequestTrait
 	];
 
 	/**
-	 * @param string|UriInterface|null $uri
+	 * @param string|\Psr\Http\Message\UriInterface|null $uri
 	 * @param string|null $method
 	 *
-	 * @throws InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 */
-	protected function initializeRequest(UriInterface|string $uri = null, string $method = null): void
+	protected function initializeRequest(\Psr\Http\Message\UriInterface|string $uri = null, string $method = null): void
 	{
 		try {
 			$this->originalMethod = $this->filterMethod($method);
-		} catch (InvalidArgumentException $e) {
+		} catch (\InvalidArgumentException $e) {
 			$this->originalMethod = $method;
 			throw $e;
 		}
@@ -79,8 +74,8 @@ trait RequestTrait
 
 	/**
 	 * @return string
-	 * @throws RuntimeException
-	 * @throws InvalidArgumentException
+	 * @throws \RuntimeException
+	 * @throws \InvalidArgumentException
 	 */
 	protected function buildFirstLine(): string
 	{
@@ -95,25 +90,25 @@ trait RequestTrait
 	}
 
 	/**
-	 * @param string|UriInterface|null $uri
+	 * @param string|\Psr\Http\Message\UriInterface|null $uri
 	 *
-	 * @return UriInterface
-	 * @throws InvalidArgumentException
+	 * @return \Psr\Http\Message\UriInterface
+	 * @throws \InvalidArgumentException
 	 */
-	private function createUri(UriInterface|string|null $uri): UriInterface
+	private function createUri(\Psr\Http\Message\UriInterface|string|null $uri): \Psr\Http\Message\UriInterface
 	{
-		if ($uri instanceof UriInterface) {
+		if ($uri instanceof \Psr\Http\Message\UriInterface) {
 			return $uri;
 		}
 		if (is_string($uri)) {
-			return Uri::createFromString($uri);
+			return \PhpPkg\Http\Message\Uri::createFromString($uri);
 		}
 
 		if ($uri === null) {
-			return new Uri();
+			return new \PhpPkg\Http\Message\Uri();
 		}
 
-		throw new InvalidArgumentException(
+		throw new \InvalidArgumentException(
 			'Invalid URI provided; must be null, a string, or a Psr\Http\Message\UriInterface instance'
 		);
 	}
@@ -124,7 +119,7 @@ trait RequestTrait
 
 	/**
 	 * @return string
-	 * @throws InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 */
 	public function getMethod(): string
 	{
@@ -172,8 +167,8 @@ trait RequestTrait
 	 * @param string $method HTTP method
 	 *
 	 * @return bool
-	 * @throws RuntimeException
-	 * @throws InvalidArgumentException
+	 * @throws \RuntimeException
+	 * @throws \InvalidArgumentException
 	 */
 	public function isMethod(string $method): bool
 	{
@@ -231,7 +226,7 @@ trait RequestTrait
 	/**
 	 * @param string $method
 	 * @return static
-	 * @throws InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 */
 	public function withMethod($method): static
 	{
@@ -250,22 +245,15 @@ trait RequestTrait
 	 * @param  string $method
 	 * @return string
 	 */
-	protected function filterMethod(string $method): string
+	protected function filterMethod(?string $method): string
 	{
 		if (!$method) {
 			return $method;
 		}
 
-		if (!is_string($method)) {
-			throw new InvalidArgumentException(sprintf(
-				'Unsupported HTTP method; must be a string, received %s',
-				get_debug_type($method)
-			));
-		}
-
 		$method = strtoupper($method);
 		if (!isset($this->validMethods[$method])) {
-			throw new InvalidArgumentException($this, $method);
+			throw new \InvalidArgumentException($this, $method);
 		}
 
 		return $method;
@@ -312,7 +300,7 @@ trait RequestTrait
 	public function withRequestTarget($requestTarget): static
 	{
 		if (preg_match('#\s#', $requestTarget)) {
-			throw new InvalidArgumentException(
+			throw new \InvalidArgumentException(
 				'Invalid request target provided; must be a string and cannot contain whitespace'
 			);
 		}
@@ -324,27 +312,27 @@ trait RequestTrait
 	}
 
 	/**
-	 * @return Uri
+	 * @return \PhpPkg\Http\Message\Uri
 	 */
-	public function getUri(): Uri
+	public function getUri(): \PhpPkg\Http\Message\Uri
 	{
 		return $this->uri;
 	}
 
 	/**
-	 * @param Uri $uri
+	 * @param \PhpPkg\Http\Message\Uri $uri
 	 */
-	public function setUri(Uri $uri): void
+	public function setUri(\PhpPkg\Http\Message\Uri $uri): void
 	{
 		$this->uri = $uri;
 	}
 
 	/**
-	 * @param UriInterface $uri
+	 * @param \Psr\Http\Message\UriInterface $uri
 	 * @param bool         $preserveHost
 	 * @return static
 	 */
-	public function withUri(UriInterface $uri, $preserveHost = false): static
+	public function withUri(\Psr\Http\Message\UriInterface $uri, $preserveHost = false): static
 	{
 		$clone = clone $this;
 

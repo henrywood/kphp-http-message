@@ -26,6 +26,9 @@ use RuntimeException;
  */
 class HttpFactory
 {
+	const CASE_LOWER = 0;
+	const CASE_UPPER = 1;
+
 	/**
 	 * Special HTTP headers that do not have the "HTTP_" prefix
 	 * @var array
@@ -302,25 +305,26 @@ class HttpFactory
 	 */
 	public static function createUriFromArray(array|Collection $env): Uri
 	{
-		$env = self::ensureIsCollection($env);
+		/* @var $env Collection */
+		$envColl = self::ensureIsCollection($env);
 
 		// Scheme
-		$isSecure = $env->get('HTTPS');
+		$isSecure = $envColl->get('HTTPS');
 		$scheme   = (empty($isSecure) || $isSecure === 'off') ? 'http' : 'https';
 
 		// Authority: Username and password
-		$username = $env->get('PHP_AUTH_USER', '');
-		$password = $env->get('PHP_AUTH_PW', '');
+		$username = $envColl->get('PHP_AUTH_USER', '');
+		$password = $envColl->get('PHP_AUTH_PW', '');
 
 		// Authority: Host
-		if ($env->has('HTTP_HOST')) {
-			$host = $env->get('HTTP_HOST');
+		if ($envColl->has('HTTP_HOST')) {
+			$host = $envColl->get('HTTP_HOST');
 		} else {
-			$host = $env->get('SERVER_NAME');
+			$host = $envColl->get('SERVER_NAME');
 		}
 
 		// Authority: Port
-		$port = (int)$env->get('SERVER_PORT', 80);
+		$port = (int)$envColl->get('SERVER_PORT', 80);
 		if (preg_match('/^(\[[a-fA-F0-9:.]+\])(:\d+)?\z/', $host, $matches)) {
 			$host = $matches[1];
 
@@ -341,12 +345,12 @@ class HttpFactory
 
 		// parse_url() requires a full URL. As we don't extract the domain name or scheme,
 		// we use a stand-in.
-		$uriPath = parse_url('http://abc.com' . $env->get('REQUEST_URI'), PHP_URL_PATH);
+		$uriPath = parse_url('http://abc.com' . $envColl->get('REQUEST_URI'), PHP_URL_PATH);
 
 		// Query string
-		$queryString = $env->get('QUERY_STRING', '');
+		$queryString = $envColl->get('QUERY_STRING', '');
 		if ($queryString === '') {
-			$queryString = parse_url('http://abc.com' . $env->get('REQUEST_URI'), PHP_URL_QUERY);
+			$queryString = parse_url('http://abc.com' . $envColl->get('REQUEST_URI'), PHP_URL_QUERY);
 		}
 
 		// Fragment
@@ -370,10 +374,10 @@ class HttpFactory
 	public static function createHeadersFromArray(array|Collection $env): Headers
 	{
 		$data = [];
-		$env  = self::ensureIsCollection($env);
-		$env  = self::determineAuthorization($env);
+		$envColl  = self::ensureIsCollection($env);
+		$envColl  = self::determineAuthorization($envColl);
 
-		foreach ($env as $key => $value) {
+		foreach ($envColl->toArray() as $key => $value) {
 			$key = strtoupper($key);
 
 			if (isset(static::$special[$key]) || str_starts_with($key, 'HTTP_')) {
@@ -384,6 +388,22 @@ class HttpFactory
 		}
 
 		return new Headers($data);
+	}
+
+	private static function array_change_key_case(array $arr, int $c = self::CASE_LOWER) {
+
+		foreach ($arr as $k => $v) {
+
+			if ($c === self::CASE_LOWER) {
+				$ret[mb_strtolower($k)] = $v;
+			}
+
+			if ($c === self::CASE_UPPER) {
+				$ret[mb_strtoupper($k)] = $v;
+			}
+		}
+
+		return $ret;
 	}
 
 	/**
@@ -398,9 +418,11 @@ class HttpFactory
 	{
 		$authorization = $env->get('HTTP_AUTHORIZATION');
 
+		if (! defined('CASE_LOWER')) define('CASE_LOWER', 0);
+
 		if (null === $authorization && is_callable('getallheaders')) {
-			$headers = getallheaders();
-			$headers = array_change_key_case($headers, CASE_LOWER);
+			$headers = self::getallheaders($env);
+			$headers = self::array_change_key_case($headers, CASE_LOWER);
 
 			if (isset($headers['authorization'])) {
 				$env->set('HTTP_AUTHORIZATION', $headers['authorization']);
@@ -410,12 +432,30 @@ class HttpFactory
 		return $env;
 	}
 
+	private static function getallheaders(Collection $source) : array {
+
+		$headerArray = $source->toArray();
+
+		$headers = [];
+
+		foreach ($headerArray as $name => $value) {
+			if (substr($name, 0, 5) == 'HTTP_') {
+				$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+			}
+		}
+		return $headers;
+	}
+
 	/**
 	 * @param mixed $data
 	 * @return Collection
 	 */
-	public static function ensureIsCollection(mixed $data): Collection
+	public static function ensureIsCollection(Collection|array $data): Collection
 	{
+		if ($data instanceof Collection) {
+			return $data;
+		}
+
 		if (is_array($data)) {
 			return new Collection($data);
 		}
@@ -423,7 +463,5 @@ class HttpFactory
 		// if (\is_object($data) && \method_exists($data, 'get')) {
 		//     return $data;
 		// }
-
-		return new Collection((array)$data);
 	}
 }

@@ -8,14 +8,12 @@
 
 namespace PhpPkg\Http\Message\Traits;
 
-use PhpPkg\Http\Message\Headers;
-
 /**
  * Trait RequestHeadersTrait
  *
  * @package PhpPkg\Http\Message\Traits
  *
- * @property Headers $headers
+ * @property \PhpPkg\Http\Message\Headers $headers
  */
 trait RequestHeadersTrait
 {

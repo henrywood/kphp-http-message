@@ -1,0 +1,19 @@
+{
+    "packages": [
+        {
+            "name": "henrywood/kphp-psr-http-message",
+            "version": "1.0",
+            "version_normalized": "1.0.0.0",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:henrywood/kphp-psr-http-message.git",
+                "reference": "master"
+            },
+            "type": "package",
+            "installation-source": "source",
+            "install-path": "../henrywood/kphp-psr-http-message"
+        }
+    ],
+    "dev": true,
+    "dev-package-names": []
+}

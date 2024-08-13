@@ -8,9 +8,6 @@
 
 namespace PhpPkg\Http\Message\Traits;
 
-use PhpPkg\Http\Message\Cookies;
-
-
 /**
  * Trait CookiesTrait
  *
@@ -21,7 +18,7 @@ trait CookiesTrait
 	/**
 	 * @var Cookies|null
 	 */
-	private ?Cookies $cookies = null;
+	private ?\PhpPkg\Http\Message\Cookies $cookies = null;
 
 	/*******************************************************************************
 	 * Cookies
@@ -53,7 +50,7 @@ trait CookiesTrait
 	{
 		$clone = clone $this;
 
-		$clone->cookies = new Cookies($cookies);
+		$clone->cookies = new \PhpPkg\Http\Message\Cookies($cookies);
 
 		return $clone;
 	}
@@ -71,19 +68,19 @@ trait CookiesTrait
 	}
 
 	/**
-	 * @return Cookies
+	 * @return \PhpPkg\Http\Message\Cookies
 	 */
-	public function getCookies(): Cookies
+	public function getCookies(): \PhpPkg\Http\Message\Cookies
 	{
 		return $this->cookies;
 	}
 
 	/**
-	 * @param array|Cookies $cookies
+	 * @param array|\PhpPkg\Http\Message\Cookies $cookies
 	 *
 	 * @return static
 	 */
-	public function setCookies(array|Cookies $cookies): static
+	public function setCookies(array|\PhpPkg\Http\Message\Cookies $cookies): static
 	{
 		if (is_array($cookies)) {
 			return $this->setCookiesFromArray($cookies);
@@ -100,7 +97,7 @@ trait CookiesTrait
 	public function setCookiesFromArray(array $cookies): static
 	{
 		if (!$this->cookies) {
-			$this->cookies = new Cookies($cookies);
+			$this->cookies = new \PhpPkg\Http\Message\Cookies($cookies);
 		} else {
 			$this->cookies->sets($cookies);
 		}

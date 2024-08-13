@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpPkg\Http\Message\Util;
+namespace PhpPkg\Http\Message;
 
 class Collection
 {
@@ -26,14 +26,6 @@ class Collection
 		$this->items[$name] = $value;
 
 		return $this;
-	}
-
-	/**
-	 * @param array $values
-	 */
-	public function sets(array $values): void
-	{
-		$this->items = $values;
 	}
 
 	// Get item by key

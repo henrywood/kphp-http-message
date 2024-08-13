@@ -109,10 +109,6 @@ class Uri implements UriInterface
 	 */
 	public static function createFromString(string $uri): self
 	{
-		if (!is_string($uri) && !method_exists($uri, '__toString')) {
-			throw new InvalidArgumentException('Uri must be a string');
-		}
-
 		$parts    = parse_url($uri);
 		$scheme   = $parts['scheme'] ?? '';
 		$user     = $parts['user'] ?? '';
@@ -197,11 +193,8 @@ class Uri implements UriInterface
 	 */
 	protected function filterScheme(string $scheme): string
 	{
-		if (!is_string($scheme) && !method_exists($scheme, '__toString')) {
-			throw new InvalidArgumentException('Uri scheme must be a string');
-		}
-
 		$scheme = \str_replace('://', '', \strtolower((string)$scheme));
+
 		if (!isset(static::$validScheme[$scheme])) {
 			throw new InvalidArgumentException('Uri scheme must be one of: "", "https", "http"');
 		}
