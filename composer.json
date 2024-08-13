@@ -31,11 +31,11 @@
 		{
 			"type": "package",
 			"package": {
-				"name": "henrywood/kphp-http-message",
+				"name": "henrywood/kphp-psr-http-message",
 				"version": "2.0",
 				"type": "package",
 				"source": {
-					"url": "git@github.com:henrywood/kphp-http-message.git",
+					"url": "git@github.com:henrywood/kphp-psr-http-message.git",
 					"type": "git",
 					"reference": "master"
 				}
