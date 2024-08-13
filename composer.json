@@ -8,13 +8,13 @@
     "http",
     "psr7"
   ],
-  "homepage": "https://github.com/phppkg/http-message",
+  "homepage": "https://github.com/henrywood/kphp-http-message",
   "license": "MIT",
   "authors": [
     {
-      "name": "inhere",
-      "email": "in.798@qq.com",
-      "homepage": "https://github.com/inhere"
+      "name": "Henrik Skov",
+      "email": "henry.wood.dk@gmail.com",
+      "homepage": "https://github.com/henrywood"
     }
   ],
   "require": {
