@@ -1,7 +1,7 @@
 {
   "name": "henrywood/kphp-http-message",
   "type": "library",
-  "description": "http message library of the php, implement the PSR7",
+  "description": "http message library adapted to KPHP, implement the PSR7",
   "keywords": [
     "library",
     "tool",
