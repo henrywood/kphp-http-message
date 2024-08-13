@@ -159,7 +159,7 @@ trait MessageTrait
 	 */
 	public function getHeader($name): array
 	{
-		return $this->headers->get($name, []);
+		return (array)$this->headers->get($name, []);
 	}
 
 	/**
@@ -263,7 +263,7 @@ trait MessageTrait
 
 
 	/**
-	 * @param int|string|\Psr\Http\Message\StreamInterface $body
+	 * @param mixed|string|\Psr\Http\Message\StreamInterface $body
 	 * @param string                               $mode
 	 *
 	 * @return \Psr\Http\Message\StreamInterface                                                                          
@@ -271,28 +271,41 @@ trait MessageTrait
 	 */
 	protected function createBodyStream(mixed $body, string $mode = 'rb'): \Psr\Http\Message\StreamInterface
 	{
-		if ($body instanceof \Psr\Http\Message\StreamInterface) {
+		if (is_object($body) && $body instanceof \Psr\Http\Message\StreamInterface) {
 			return $body;
-		}
+		} else {
 
-		if (!is_string($body) && ! $this->is_resource($body)) {
-			throw new \InvalidArgumentException(
-				'Stream must be a string stream resource identifier, '
-				. 'an actual stream resource, '
-				. 'or a Psr\Http\Message\StreamInterface implementation'
-			);
-		}
+			if (!is_string($body) && ! $this->is_resource($body)) {
+				throw new \InvalidArgumentException(
+					'Stream must be a string stream resource identifier, '
+					. 'an actual stream resource, '
+					. 'or a Psr\Http\Message\StreamInterface implementation'
+				);
+			}
 
-		if (is_string($body)) {
-			//set_error_handler(static function ($errno, $errstr) { throw new \InvalidArgumentException('Invalid stream reference provided: ' . $errstr); }, E_WARNING);
+			if (is_string($body)) {
+				//set_error_handler(static function ($errno, $errstr) { throw new \InvalidArgumentException('Invalid stream reference provided: ' . $errstr); }, E_WARNING);
 
-			$body = fopen($body, $mode);
+				$resource = fopen($body, $mode);
 
-			//restore_error_handler();
+				if ($resource === false) {
+					throw new \InvalidArgumentException('Unable to open the file.');
+				}
 
-			return new \PhpPkg\Http\Message\Stream($body);
+				//restore_error_handler();
+
+				return new \PhpPkg\Http\Message\Stream($resource);
+			} else {
+				throw new \InvalidArgumentException(
+					'Stream must be a string stream resource identifier, '
+					. 'an actual stream resource, '
+					. 'or a Psr\Http\Message\StreamInterface implementation'
+				);				
+			}
+
 		}
 	}
+
 
 	/**
 	 * @return \Psr\Http\Message\StreamInterface

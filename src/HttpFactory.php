@@ -104,9 +104,9 @@ class HttpFactory
 	}
 
 	/**
-	 * Create a new server request from server variables.
+	 * Create a new server request from server variables
 	 * @param array|mixed $server Typically $_SERVER or similar structure.
-	 * @param string|null $class The custom request class
+	 * @param ?string $class
 	 * @return ServerRequestInterface
 	 * @throws RuntimeException
 	 * @throws InvalidArgumentException
@@ -124,10 +124,10 @@ class HttpFactory
 		$serverParams  = $env->all();
 		$uploadedFiles = UploadedFile::createFromFILES();
 
-		$class = $class ?: ServerRequest::class;
+		//$class = $class ?: ServerRequest::class;
 
 		/** @var ServerRequest $request */
-		$request = new $class($method, $uri, $headers, $cookies, $serverParams, $body, $uploadedFiles);
+		$request = new ServerRequest((string)$method, $uri, $headers, $cookies, $serverParams, $body, $uploadedFiles);
 
 		if (
 			$method === 'POST' &&
@@ -324,7 +324,7 @@ class HttpFactory
 		}
 
 		// Authority: Port
-		$port = (int)$envColl->get('SERVER_PORT', 80);
+		$port = (int)$envColl->get('SERVER_PORT', '80');
 		if (preg_match('/^(\[[a-fA-F0-9:.]+\])(:\d+)?\z/', $host, $matches)) {
 			$host = $matches[1];
 
@@ -357,7 +357,7 @@ class HttpFactory
 		$fragment = '';
 
 		// Build Uri
-		$uri = new Uri($scheme, $host, $port, $uriPath, $queryString ?? '', $fragment, $username, $password);
+		$uri = new Uri((string)$scheme, (string)$host, (int)$port, (string)$uriPath, (string)$queryString ?? '', (string)$fragment ?? '', (string)$username ?? '', (string)$password ?? '');
 
 		return $uri;
 	}
@@ -420,7 +420,7 @@ class HttpFactory
 
 		if (! defined('CASE_LOWER')) define('CASE_LOWER', 0);
 
-		if (null === $authorization && is_callable('getallheaders')) {
+		if (null === $authorization) {
 			$headers = self::getallheaders($env);
 			$headers = self::array_change_key_case($headers, CASE_LOWER);
 
@@ -447,17 +447,17 @@ class HttpFactory
 	}
 
 	/**
-	 * @param mixed $data
+	 * @param Collection|mixed[] $data
 	 * @return Collection
 	 */
 	public static function ensureIsCollection(Collection|array $data): Collection
 	{
-		if ($data instanceof Collection) {
+		if (is_object($data) && $data instanceof Collection) {
 			return $data;
-		}
-
-		if (is_array($data)) {
+		} else if (is_array($data)) {
 			return new Collection($data);
+		} else {
+			throw new \InvalidArgumentException('Neither array nor collection');
 		}
 
 		// if (\is_object($data) && \method_exists($data, 'get')) {

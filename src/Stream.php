@@ -57,21 +57,21 @@ class Stream implements StreamInterface
 	 *
 	 * @var bool
 	 */
-	protected ?bool $readable = NULL;
+	protected ?bool $readable = FALSE;
 
 	/**
 	 * Is this stream writable?
 	 *
 	 * @var bool
 	 */
-	protected ?bool $writable = NULL;
+	protected bool $writable = FALSE;
 
 	/**
 	 * Is this stream seekable?
 	 *
 	 * @var bool
 	 */
-	protected ?bool $seekable = NULL;
+	protected bool $seekable = FALSE;
 
 	/**
 	 * The size of the stream if known
@@ -85,7 +85,7 @@ class Stream implements StreamInterface
 	 *
 	 * @var bool
 	 */
-	protected ?bool $isPipe = NULL;
+	protected bool $isPipe = FALSE;
 
 
 	/**
@@ -108,13 +108,9 @@ class Stream implements StreamInterface
 	 *
 	 * @link http://php.net/manual/en/function.stream-get-meta-data.php
 	 *
-	 * @param string $key Specific metadata to retrieve.
-	 *
-	 * @return array|mixed|null Returns an associative array if no key is
-	 *     provided. Returns a specific key value if a key is provided and the
-	 *     value is found, or null if the key is not found.
+	 * @param string|null $key Specific metadata to retrieve.
 	 */
-	public function getMetadata($key = null): mixed
+	public function getMetadata(?string $key = null) : ?array
 	{
 		//$this->meta = \stream_get_meta_data($this->stream);
 		//if (null === $key) {
@@ -178,12 +174,12 @@ class Stream implements StreamInterface
 	{
 		$oldResource    = $this->stream;
 		$this->stream   = null;
-		$this->meta     = null;
-		$this->readable = null;
-		$this->writable = null;
-		$this->seekable = null;
+		$this->meta     = [];
+		$this->readable = FALSE;
+		$this->writable = FALSE;
+		$this->seekable = FALSE;
 		$this->size     = null;
-		$this->isPipe   = null;
+		$this->isPipe   = FALSE;
 
 		return $oldResource;
 	}
@@ -421,7 +417,7 @@ class Stream implements StreamInterface
 		// reset size so that it will be recalculated on next call to getSize()
 		$this->size = null;
 
-		return $written;
+		return (int)$written;
 	}
 
 	/**
@@ -434,11 +430,21 @@ class Stream implements StreamInterface
 	 */
 	public function getContents(): string
 	{
-		if (!$this->isReadable() || ($contents = stream_get_contents($this->stream)) === false) {
-			throw new RuntimeException('Could not get contents of stream');
+		if (!$this->isReadable()) {
+			throw new RuntimeException('Stream is not readable');
 		}
 
-		return (string)$contents;
+		$contents = '';
+
+		while (!feof($this->stream)) {
+			$chunk = fread($this->stream, 8192);
+			if ($chunk === false) {
+				throw new RuntimeException('Could not read from stream');
+			}
+			$contents .= $chunk;
+		}
+
+		return $contents;
 	}
 
 	/**

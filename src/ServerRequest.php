@@ -102,7 +102,7 @@ class ServerRequest implements ServerRequestInterface
 		$this->attributes    = new Collection();
 
 		if (isset($serverParams['SERVER_PROTOCOL'])) {
-			$this->protocolVersion = \str_replace('HTTP/', '', $serverParams['SERVER_PROTOCOL']);
+			$this->protocolVersion = \str_replace('HTTP/', '', (string)$serverParams['SERVER_PROTOCOL']);
 		}
 
 		if (!$this->headers->has('Host') || $this->uri->getHost() !== '') {
@@ -137,7 +137,8 @@ class ServerRequest implements ServerRequestInterface
 	protected function registerDataParsers(): void
 	{
 		$this->registerMediaTypeParser(MediaType::APP_JSON, function ($input) {
-			$result = json_decode($input, true, 512, JSON_THROW_ON_ERROR);
+			//$result = json_decode($input, true, 512, JSON_THROW_ON_ERROR);
+			$result = json_decode($input, true);
 			if (!is_array($result)) {
 				return null;
 			}
@@ -209,7 +210,7 @@ class ServerRequest implements ServerRequestInterface
 		}
 		 */
 
-		$this->bodyParsers[$mediaType] = $callable;
+		//$this->bodyParsers[$mediaType] = $callable;
 	}
 
 	/*******************************************************************************
@@ -330,13 +331,14 @@ class ServerRequest implements ServerRequestInterface
 		$this->_rawBody = $rawBody;
 	}
 
-	/** @var array|null */
-	private ?array $bodyParsed;
+	/** @var mixed|null */
+	private mixed|null $bodyParsed;
 
 	/**
 	 * @return array|null
 	 * @throws RuntimeException
 	 */
+	/*
 	public function getParsedBody(): ?array
 	{
 		if ($this->bodyParsed !== null) {
@@ -371,6 +373,88 @@ class ServerRequest implements ServerRequestInterface
 		}
 
 		return $this->bodyParsed;
+	}
+	 */
+
+	/**
+	 * @return mixed|null
+	 * @throws RuntimeException
+	 */
+	public function getParsedBody(): ?mixed
+	{
+		if ($this->bodyParsed !== null) {
+			return $this->bodyParsed;
+		}
+
+		$this->bodyParsed = [];
+
+		if (!$this->body) {
+			return $this->bodyParsed;
+		}
+
+		$mediaType = $this->getMediaType();
+		$body = (string)$this->getBody();
+
+		// look for a media type with a structured syntax suffix (RFC 6839)
+		$parts = explode('+', $mediaType);
+		if (count($parts) >= 2) {
+			$mediaType = 'application/' . $parts[count($parts) - 1];
+		}
+
+		switch ($mediaType) {
+		case 'application/json':
+			$parsed = $this->parseJson($body);
+			break;
+		case 'application/x-www-form-urlencoded':
+			$parsed = $this->parseUrlEncoded($body);
+			break;
+		case 'multipart/form-data':
+			$parsed = $this->parseMultipart($body);
+			break;
+		default:
+			$parsed = null;
+		}
+
+		if (null !== $parsed && !is_object($parsed) && !is_array($parsed)) {
+			throw new RuntimeException(
+				'Request body media type parser return value must be an array, an object, or null'
+			);
+		}
+
+		$this->bodyParsed = $parsed ?: [];
+		return $this->bodyParsed;
+	}
+
+	/**
+	 * Parse JSON body
+	 * @param string $body
+	 * @return mixed|null
+	 */
+	private function parseJson(string $body): ?mixed
+	{
+		return json_decode($body, true);
+	}
+
+	/**
+	 * Parse URL-encoded body
+	 * @param string $body
+	 * @return mixed|null
+	 */
+	private function parseUrlEncoded(string $body): ?mixed
+	{
+		parse_str($body, $parsed);
+		return $parsed;
+	}
+
+	/**
+	 * Parse multipart body (if needed)
+	 * @param string $body
+	 * @return array|null
+	 */
+	private function parseMultipart(string $body): ?array
+	{
+		// Implement multipart parsing if required
+		return null;
 	}
 
 	/**
@@ -432,13 +516,14 @@ class ServerRequest implements ServerRequestInterface
 	 */
 	public function getParsedBodyParam(string $key, mixed $default = null): mixed
 	{
+
 		$postParams = $this->getParsedBody();
 		$result     = $default;
 
 		if (is_array($postParams) && isset($postParams[$key])) {
 			$result = $postParams[$key];
-		} elseif (is_object($postParams) && property_exists($postParams, $key)) {
-			$result = $postParams->$key;
+			//} elseif (is_object($postParams) && isset($postParams->$key)) {
+			//	$result = $postParams->$key;
 		}
 
 		return $result;
@@ -490,16 +575,18 @@ class ServerRequest implements ServerRequestInterface
 	 * @return mixed The parameter value.
 	 * @throws RuntimeException
 	 */
-	public function getParam(string $key, string $default = null): mixed
-	{
-		$result     = $default;
-		$getParams  = $this->getQueryParams();
+	public function getParam(string $key, string $default = null): mixed {
+
+		$result = $default;
+
 		$postParams = $this->getParsedBody();
+
+		$getParams = $this->getQueryParams();
 
 		if (is_array($postParams) && isset($postParams[$key])) {
 			$result = $postParams[$key];
-		} elseif (is_object($postParams) && property_exists($postParams, $key)) {
-			$result = $postParams->$key;
+			//} elseif (is_object($postParams) && isset($postParams->$key)) {
+			//	$result = $postParams->$key;
 		} elseif (isset($getParams[$key])) {
 			$result = $getParams[$key];
 		}

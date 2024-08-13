@@ -63,9 +63,9 @@ trait RequestTrait
 	protected function initializeRequest(\Psr\Http\Message\UriInterface|string $uri = null, string $method = null): void
 	{
 		try {
-			$this->originalMethod = $this->filterMethod($method);
+			$this->originalMethod = $this->filterMethod((string)$method);
 		} catch (\InvalidArgumentException $e) {
-			$this->originalMethod = $method;
+			$this->originalMethod = (is_null($method)) ? '' : $method;
 			throw $e;
 		}
 
@@ -97,20 +97,20 @@ trait RequestTrait
 	 */
 	private function createUri(\Psr\Http\Message\UriInterface|string|null $uri): \Psr\Http\Message\UriInterface
 	{
-		if ($uri instanceof \Psr\Http\Message\UriInterface) {
+		if (is_object($uri) && $uri instanceof \Psr\Http\Message\UriInterface) {
 			return $uri;
 		}
 		if (is_string($uri)) {
 			return \PhpPkg\Http\Message\Uri::createFromString($uri);
 		}
-
 		if ($uri === null) {
 			return new \PhpPkg\Http\Message\Uri();
 		}
-
 		throw new \InvalidArgumentException(
 			'Invalid URI provided; must be null, a string, or a Psr\Http\Message\UriInterface instance'
 		);
+
+
 	}
 
 	/*******************************************************************************
@@ -130,7 +130,7 @@ trait RequestTrait
 			if ($customMethod) {
 				$this->method = $this->filterMethod($customMethod);
 			} elseif ($this->originalMethod === 'POST') {
-				$overrideMethod = $this->filterMethod($this->getParsedBodyParam('_METHOD'));
+				$overrideMethod = $this->filterMethod((string)$this->getParsedBodyParam('_METHOD'));
 				if ($overrideMethod !== null) {
 					$this->method = $overrideMethod;
 				}

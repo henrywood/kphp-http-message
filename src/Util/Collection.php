@@ -13,11 +13,10 @@ class Collection
 
 	/**
 	 * @param string $name
-	 * @param mixed  $value
 	 *
-	 * @return mixed|null
+	 * @return self
 	 */
-	public function add(string $name, mixed $value): mixed
+	public function add(string $name, $value): Collection
 	{
 		if (isset($this->items[$name])) {
 			return $this;
@@ -30,22 +29,26 @@ class Collection
 
 	/**
 	 * @param array $values
+	 * @return static
 	 */
-	public function sets(array $values): void
+	public function sets(array $values): static
 	{
 		$this->items = $values;
+		return $this;
 	}
 
 	// Get item by key
-	public function get(string $key)
+	public function get(string $key, ?string $default = NULL)
 	{
-		return $this->items[$key] ?? null;
+		return $this->items[$key] ?? $default;
 	}
 
 	// Set item by key
-	public function set(string $key, $value): void
+	// @return static
+	public function set(string $key, mixed $value): static
 	{
 		$this->items[$key] = $value;
+		return $this;
 	}
 
 	// Check if a key exists
@@ -101,7 +104,7 @@ class Collection
 	}
 
 	// Convert collection to a string
-	public function __toString(): string
+	public function __toString(): string|false
 	{
 		return json_encode($this->items);
 	}

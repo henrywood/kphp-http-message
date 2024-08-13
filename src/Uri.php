@@ -109,15 +109,15 @@ class Uri implements UriInterface
 	 */
 	public static function createFromString(string $uri): self
 	{
-		$parts    = parse_url($uri);
-		$scheme   = $parts['scheme'] ?? '';
-		$user     = $parts['user'] ?? '';
-		$pass     = $parts['pass'] ?? '';
-		$host     = $parts['host'] ?? '';
-		$port     = $parts['port'] ?? null;
-		$path     = $parts['path'] ?? '';
-		$query    = $parts['query'] ?? '';
-		$fragment = $parts['fragment'] ?? '';
+		$parts    = (array) parse_url($uri);
+		$scheme   = (string)$parts['scheme'] ?? '';
+		$user     = (string)$parts['user'] ?? '';
+		$pass     = (string)$parts['pass'] ?? '';
+		$host     = (string)$parts['host'] ?? '';
+		$port     = (isset($parts['port'])) ? (int) $parts['port'] : null;
+		$path     = (string)$parts['path'] ?? '';
+		$query    = (string)$parts['query'] ?? '';
+		$fragment = (string)$parts['fragment'] ?? '';
 
 		return new static($scheme, $host, $port, $path, $query, $fragment, $user, $pass);
 	}
@@ -436,7 +436,7 @@ class Uri implements UriInterface
 				return rawurlencode($match[0]);
 			},
 			$path
-		);
+		) ?? '';
 	}
 
 	/********************************************************************************
@@ -470,11 +470,8 @@ class Uri implements UriInterface
 	 * @return self A new instance with the specified query string.
 	 * @throws InvalidArgumentException for invalid query strings.
 	 */
-	public function withQuery($query): self
+	public function withQuery(string $query): self
 	{
-		if (!is_string($query) && !method_exists($query, '__toString')) {
-			throw new InvalidArgumentException('Uri query must be a string');
-		}
 		$query        = ltrim((string)$query, '?');
 		$clone        = clone $this;
 		$clone->query = $this->filterQuery($query);
@@ -497,7 +494,7 @@ class Uri implements UriInterface
 				return \rawurlencode($match[0]);
 			},
 			$query
-		);
+		) ?? '';
 	}
 
 	/********************************************************************************
@@ -534,10 +531,6 @@ class Uri implements UriInterface
 	 */
 	public function withFragment($fragment): self
 	{
-		if (!is_string($fragment) && !method_exists($fragment, '__toString')) {
-			throw new InvalidArgumentException('Uri fragment must be a string');
-		}
-
 		$fragment        = ltrim((string)$fragment, '#');
 		$clone           = clone $this;
 		$clone->fragment = $this->filterQuery($fragment);

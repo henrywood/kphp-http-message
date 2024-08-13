@@ -9,6 +9,7 @@
 namespace PhpPkg\Http\Message\Request;
 
 use PhpPkg\Http\Message\Stream;
+use RuntimeException;
 
 /**
  * Class RequestBody
@@ -25,13 +26,46 @@ class RequestBody extends Stream
 	public function __construct(string $content = null)
 	{
 		$stream = fopen('php://temp', 'wb+');
-		stream_copy_to_stream(fopen('php://input', 'rb'), $stream);
+		if ($stream === false) {
+			throw new RuntimeException('Unable to open a stream');
+		}
+
+		// Copy data from php://input to the new stream
+		$inputStream = fopen('php://input', 'rb');
+		if ($inputStream === false) {
+			fclose($stream);
+			throw new RuntimeException('Unable to open php://input stream');
+		}
+
+		$this->copyStream($inputStream, $stream);
+
+		fclose($inputStream);
 		rewind($stream);
 
 		parent::__construct($stream);
 
-		if ($content) {
+		if ($content !== null) {
 			$this->write($content);
 		}
 	}
+
+	/**
+	 * Copy data from one stream to another.
+	 *
+	 */
+	private function copyStream($source, $destination, int $chunkSize = 8192): void
+	{
+		while (!feof($source)) {
+			$chunk = fread($source, $chunkSize);
+			if ($chunk === false) {
+				throw new RuntimeException('Error reading from source stream');
+			}
+			$written = fwrite($destination, $chunk);
+			if ($written === false) {
+				throw new RuntimeException('Error writing to destination stream');
+			}
+		}
+	}
 }
+
+

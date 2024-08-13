@@ -439,11 +439,11 @@ class Response implements ResponseInterface
 		$clone         = clone $this;
 		$clone->status = $code;
 
-		if ($reasonPhrase === '' && isset(static::$messages[$code])) {
+		if ($reasonPhrase == '' && isset(static::$messages[$code])) {
 			$reasonPhrase = static::$messages[$code];
 		}
 
-		if ($reasonPhrase === '') {
+		if ($reasonPhrase == '') {
 			throw new InvalidArgumentException('ReasonPhrase must be supplied for this code');
 		}
 

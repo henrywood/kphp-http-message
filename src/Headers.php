@@ -58,16 +58,16 @@ class Headers extends Collection
 	 * Set HTTP header value
 	 * This method sets a header value. It replaces
 	 * any values that may already exist for the header name.
-	 * @param string       $key The case-insensitive header name
-	 * @param string|array $value The header value
-	 * @return mixed
+	 * @return static
 	 */
-	public function set($key, $value): mixed
+	public function set(string $key, mixed $value): static
 	{
-		return parent::set($this->normalizeKey($key), [
+		parent::set((string)$this->normalizeKey($key), [
 			'value'       => (array)$value,
 			'originalKey' => $key
 		]);
+
+		return $this;
 	}
 
 	/**
@@ -81,7 +81,7 @@ class Headers extends Collection
 	public function get(string $key, $default = null): mixed
 	{
 		if ($this->has($key)) {
-			return parent::get($this->normalizeKey($key))['value'];
+			return parent::get((string)$this->normalizeKey($key))['value'];
 		}
 
 		return $default;
@@ -103,11 +103,10 @@ class Headers extends Collection
 
 	/**
 	 * @param string $name
-	 * @param mixed  $value
 	 *
-	 * @return mixed|null
+	 * @return Headers
 	 */
-	public function add(string $name, mixed $value): mixed
+	public function add(string $name, $value): Headers
 	{
 		if (!$value) {
 			return $this;
@@ -124,7 +123,7 @@ class Headers extends Collection
 	 */
 	public function has(string $key): bool
 	{
-		return parent::has($this->normalizeKey($key));
+		return parent::has((string)$this->normalizeKey($key));
 	}
 
 	/**
@@ -193,22 +192,42 @@ class Headers extends Collection
 	}
 
 	/**
+	 * Capitalize the words in a string separated by a specified delimiter.
+	 *
+	 * @param string $name The string to capitalize.
+	 * @return string The capitalized string.
+	 */
+	private function capitalizeWords(string $name): string
+	{
+		// Split the string by delimiter '-'
+		$parts = explode('-', $name);
+
+		// Capitalize each part
+		$capitalizedParts = array_map('ucfirst', $parts);
+
+		// Join the parts back together with delimiter '-'
+		return implode('-', $capitalizedParts);
+	}
+
+	/**
 	 * @param bool $join to String
 	 * @return array|string
 	 */
 	public function toHeaderLines(bool $join = false): array|string
 	{
+
 		$output = [];
 
-		foreach ($this as $name => $info) {
-			$name     = \ucwords($name, '-');
-			$value    = \implode(',', $info['value']);
+		foreach ($this->toArray() as $name => $info) {
+			// Use custom method to capitalize header names
+			$name = $this->capitalizeWords((string)$name);
+			$value = implode(',', $info['value']);
 			$output[] = "$name: $value\r\n";
 		}
 
-		return $join ? \implode('', $output) : $output;
-	}
+		return $join ? implode('', $output) : $output;
 
+	}
 	/**
 	 * @return array
 	 */
@@ -216,8 +235,8 @@ class Headers extends Collection
 	{
 		$output = [];
 
-		foreach ($this as $name => $info) {
-			$name          = \ucwords($name, '-');
+		foreach ($this->toArray() as $name => $info) {
+			$name = $this->capitalizeWords((string)$name);
 			$output[$name] = \implode(',', $info['value']);
 		}
 

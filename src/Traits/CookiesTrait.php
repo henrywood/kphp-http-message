@@ -76,18 +76,22 @@ trait CookiesTrait
 	}
 
 	/**
-	 * @param array|\PhpPkg\Http\Message\Cookies $cookies
+	 * @param mixed|\PhpPkg\Http\Message\Cookies $cookies
 	 *
 	 * @return static
 	 */
-	public function setCookies(array|\PhpPkg\Http\Message\Cookies $cookies): static
+	public function setCookies(mixed|\PhpPkg\Http\Message\Cookies $cookies): static
 	{
-		if (is_array($cookies)) {
+		if (is_array($cookies) && !is_object($cookies) && ! $cookies instanceof \PhpPkg\Http\Message\Cookies) {
 			return $this->setCookiesFromArray($cookies);
-		}
+		} else if (! is_array($cookies) && is_object($cookies) && $cookies instanceof \PhpPkg\Http\Message\Cookies) {
 
-		$this->cookies = $cookies;
-		return $this;
+			$this->cookies = $cookies;
+			return $this;			
+		} else {
+			throw new \InvalidArgumentException('Neither array nor Cookies instance');
+
+		}
 	}
 
 	/**
