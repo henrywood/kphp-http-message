@@ -97,9 +97,9 @@ class UploadedFile implements UploadedFileInterface
 			$parsed[$field] = new self(
 				(string)$uploadedFile['tmp_name'],
 				(string)$uploadedFile['name'],
-				$uploadedFile['type'],
-				$uploadedFile['size'],
-				$uploadedFile['error'],
+				(isset($uploadedFile['type'])) ? (string)$uploadedFile['type'] : NULL,
+				(isset($uploadedFile['size'])) ? (int)$uploadedFile['size'] : NULL,
+				(isset($uploadedFile['error'])) ? (int)$uploadedFile['error'] : 0,
 				true
 			);
 		}
@@ -119,7 +119,7 @@ class UploadedFile implements UploadedFileInterface
 	 */
 	public function __construct(
 		string $file,
-		string $name = null,
+		string $name,
 		?string $type = null,
 		?int $size = null,
 		int $error = \UPLOAD_ERR_OK,

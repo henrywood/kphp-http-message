@@ -39,9 +39,9 @@ class ServerRequest implements ServerRequestInterface
 	public const EOL = "\r\n";
 
 	/**
-	 * @var array
+	 * @var mixed
 	 */
-	private array $uploadedFiles;
+	private mixed $uploadedFiles;
 
 	/**
 	 * List of request body parsers (e.g., url-encoded, JSON, XML, multipart)
@@ -77,7 +77,7 @@ class ServerRequest implements ServerRequestInterface
 	 * @param array           $cookies
 	 * @param array           $serverParams
 	 * @param StreamInterface $body
-	 * @param array           $uploadedFiles
+	 * @param mixed           $uploadedFiles
 	 *
 	 * @throws RuntimeException
 	 * @throws InvalidArgumentException
@@ -89,17 +89,17 @@ class ServerRequest implements ServerRequestInterface
 		array $cookies = [],
 		array $serverParams = [],
 		StreamInterface $body = null,
-		array $uploadedFiles = [],
+		mixed $uploadedFiles = null,
 		string $protocol = 'HTTP',
-		string $protocolVersion = '1.1'
-	) {
+		string $protocolVersion = '1.1') {
+
 		$this->setCookies($cookies);
 		$this->initialize($protocol, $protocolVersion, $headers, $body ?: new RequestBody());
 		$this->initializeRequest($uri, $method);
 
 		$this->serverParams  = $serverParams;
 		$this->uploadedFiles = $uploadedFiles;
-		$this->attributes    = new Collection();
+		$this->attributes    = new Collection([]);
 
 		if (isset($serverParams['SERVER_PROTOCOL'])) {
 			$this->protocolVersion = \str_replace('HTTP/', '', (string)$serverParams['SERVER_PROTOCOL']);

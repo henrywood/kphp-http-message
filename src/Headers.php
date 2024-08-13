@@ -104,15 +104,17 @@ class Headers extends Collection
 	/**
 	 * @param string $name
 	 *
-	 * @return Headers
+	 * @return void
 	 */
-	public function add(string $name, $value): Headers
+	public function add(string $name, $value): void
 	{
 		if (!$value) {
-			return $this;
+			return;
 		}
 
-		return parent::add($this->normalizeKey($name), [
+		$key = $this->normalizeKey($name);
+
+		if ($key) parent::add($key, [
 			'value'       => (array)$value,
 			'originalKey' => $name
 		]);

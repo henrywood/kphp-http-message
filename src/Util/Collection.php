@@ -4,9 +4,9 @@ namespace PhpPkg\Http\Message\Util;
 
 class Collection
 {
-	private $items = [];
+	private $items;
 
-	public function __construct(array $items = [])
+	public function __construct(mixed $items)
 	{
 		$this->items = $items;
 	}
@@ -14,17 +14,15 @@ class Collection
 	/**
 	 * @param string $name
 	 *
-	 * @return self
+	 * @return void
 	 */
-	public function add(string $name, $value): Collection
+	public function add(string $name, $value): void
 	{
 		if (isset($this->items[$name])) {
 			return $this;
 		}
 
 		$this->items[$name] = $value;
-
-		return $this;
 	}
 
 	/**
@@ -64,7 +62,7 @@ class Collection
 	}
 
 	// Get all items
-	public function all(): array
+	public function all(): mixed
 	{
 		return $this->items;
 	}

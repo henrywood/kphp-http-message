@@ -53,7 +53,7 @@ trait MessageTrait
 	 *
 	 * @param string                          $protocol
 	 * @param string                          $protocolVersion
-	 * @param array|\PhpPkg\Http\Message\Headers|null $headers
+	 * @param mixed|\PhpPkg\Http\Message\Headers|null $headers
 	 * @param string|\Psr\Http\Message\StreamInterface $body
 	 *
 	 * @throws \InvalidArgumentException
@@ -70,7 +70,7 @@ trait MessageTrait
 		if ($headers) {
 			$this->headers = $headers instanceof \PhpPkg\Http\Message\Headers ? $headers : new \PhpPkg\Http\Message\Headers($headers);
 		} else {
-			$this->headers = new \PhpPkg\Http\Message\Headers();
+			$this->headers = new \PhpPkg\Http\Message\Headers([]);
 		}
 
 		$this->body = $this->createBodyStream($body);
@@ -157,7 +157,7 @@ trait MessageTrait
 	 * @param string $name
 	 * @return string[]
 	 */
-	public function getHeader($name): array
+	public function getHeader($name)
 	{
 		return (array)$this->headers->get($name, []);
 	}

@@ -65,15 +65,15 @@ class Cookies extends Collection
 	/**
 	 * @param string $name
 	 *
-	 * @return Cookies
+	 * @return void
 	 */
-	public function add(string $name, $value): Cookies
+	public function add(string $name, $value): void
 	{
 		if (!\is_array($value)) {
 			$value = ['value' => (string)$value];
 		}
 
-		return parent::add($name, \array_replace($this->defaults, $value));
+		parent::add($name, \array_replace($this->defaults, $value));
 	}
 
 	/**
@@ -93,7 +93,7 @@ class Cookies extends Collection
 	/**
 	 * Convert to `Set-Cookie` header
 	 * @param  string $name Cookie name
-	 * @param  array  $properties Cookie properties
+	 * @param  mixed  $properties Cookie properties
 	 * @return string
 	 */
 	protected function toHeaderLine(string $name, array $properties): string
