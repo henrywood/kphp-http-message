@@ -10,11 +10,11 @@
 namespace PhpPkg\Http\Message;
 
 use InvalidArgumentException;
+use PhpPkg\Http\Message\Stream\FileStream;
 use PhpPkg\Http\Message\Traits\CookiesTrait;
 use PhpPkg\Http\Message\Traits\MessageTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
-use PhpPkg\Http\Message\Stream\TempStream;
 
 /**
  * Class Response
@@ -147,17 +147,73 @@ class Response implements ResponseInterface
 		return new static($status, $headers, $cookies, $body, $protocol, $protocolVersion);
 	}
 
+	/**
+	 * Helper to send a file
+	 */
+	public function sendFile(string $filePath) {
+
+		if (! file_exists($filePath)) {
+			$this->setStatus(404);
+			$this->write('HTTP 404 - Not found');
+			$this->end();
+		}
+
+		// Set up necessary headers
+		$fileSize = filesize($filePath);
+		$fileName = basename($filePath);
+		$mimeType = mime_content_type($filePath) ?: 'application/octet-stream';
+
+		$this->withHeader('Content-Description', 'File Transfer')
+	   ->withHeader('Content-Type', $mimeType)
+	   ->withHeader('Content-Disposition', 'attachment; filename="' . $fileName . '"')
+	   ->withHeader('Content-Transfer-Encoding', 'binary')
+	   ->withHeader('Content-Length', (string) $fileSize)
+	   ->withHeader('Cache-Control', 'must-revalidate')
+	   ->withHeader('Pragma', 'public');
+
+		foreach ($this->getHeaders() as $name => $values) {
+			header($name . ': ' . implode(', ', $values));
+		}
+
+		// Clear the output buffer to prevent any additional output
+		if (ob_get_length()) {
+			ob_end_clean();
+		}
+
+		// Create a FileStream and set it as the body of the response
+		$fs = new FileStream($filePath);
+		$response = $this->withBody($fs);
+
+		// Stream the file content
+		while (!$fs->eof()) {
+			echo $fs->read(8192); // Read and output in 8KB chunks
+			flush(); // Flush the output buffer to send the content to the client
+		}
+
+		// Close the stream (optional but good practice)
+		$fs->close();
+
+		// End the response
+		$this->end(); 
+	}
+
+	/**
+	 * Helper to add a string to the response
+	 * Response::end() should be called to end the response
+	 */
 	public function write(string $content) : void {
 
 		$this->getBody()->write($content);
 	}
 
 	/**
-	 * Helper to simply send a string response
+	 * Helper to simply send a string response and end the response
 	 */
-	public function end(string $content, int $code = 200) : void {
+	public function end(string $content = '', int $code = 200) : void {
 
-		$this->getBody()->write($content);		
+		$preContent = ob_get_clean() ?? '';
+
+		$this->getBody()->write($preContent.$content);		
 
 		$response = $this->withBody($this->getBody())->withStatus($code);
 
@@ -194,6 +250,8 @@ class Response implements ResponseInterface
 		$this->initialize($protocol, $protocolVersion, $headers, $body ?: new Body());
 
 		$this->status = $this->filterStatus($status);
+
+		ob_start();
 	}
 
 	/**
