@@ -27,6 +27,21 @@
       "PhpPkg\\Http\\Message\\": "src/"
     }
   },
+"repositories": [
+		{
+			"type": "package",
+			"package": {
+				"name": "henrywood/kphp-http-message",
+				"version": "2.0",
+				"type": "package",
+				"source": {
+					"url": "git@github.com:henrywood/kphp-http-message.git",
+					"type": "git",
+					"reference": "master"
+				}
+			}
+		}
+],
   "suggest": {
     "inhere/php-validate": "Very lightweight data validate tool",
     "inhere/console": "a lightweight php console application library."
