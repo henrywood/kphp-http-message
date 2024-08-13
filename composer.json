@@ -1,5 +1,5 @@
 {
-  "name": "phppkg/http-message",
+  "name": "henrywood/kphp-http-message",
   "type": "library",
   "description": "http message library of the php, implement the PSR7",
   "keywords": [
