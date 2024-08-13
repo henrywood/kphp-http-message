@@ -1,0 +1,34 @@
+{
+  "name": "phppkg/http-message",
+  "type": "library",
+  "description": "http message library of the php, implement the PSR7",
+  "keywords": [
+    "library",
+    "tool",
+    "http",
+    "psr7"
+  ],
+  "homepage": "https://github.com/phppkg/http-message",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "inhere",
+      "email": "in.798@qq.com",
+      "homepage": "https://github.com/inhere"
+    }
+  ],
+  "require": {
+    "php": ">8.0.0",
+    "toolkit/stdlib": "~2.0",
+    "psr/http-message": "^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "PhpPkg\\Http\\Message\\": "src/"
+    }
+  },
+  "suggest": {
+    "inhere/php-validate": "Very lightweight data validate tool",
+    "inhere/console": "a lightweight php console application library."
+  }
+}
