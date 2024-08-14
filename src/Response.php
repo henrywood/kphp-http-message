@@ -217,7 +217,7 @@ class Response implements ResponseInterface
 	/**
 	 * Helper to send a file
 	 */
-	public function sendFile(string $filePath) {
+	public function sendFile(string $filePath) : void {
 
 		if (! file_exists($filePath)) {
 			$this->setStatus(404);
