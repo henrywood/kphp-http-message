@@ -225,10 +225,10 @@ class ServerRequest implements ServerRequestInterface
 	/**
 	 * Returns the request parameters given in the [[queryString]].
 	 * This method will return the contents of `$_GET` if params where not explicitly set.
-	 * @return array the request GET parameter values.
+	 * @return mixed the request GET parameter values.
 	 * @see setQueryParams()
 	 */
-	public function getQueryParams(): array
+	public function getQueryParams() : array
 	{
 		return $this->_queryParams ?? $_GET;
 	}
@@ -294,8 +294,8 @@ class ServerRequest implements ServerRequestInterface
 	}
 
 	/**
-	 * @param      $name
-	 * @param null $defaultValue
+	 * @param string $name
+	 * @param mixed $defaultValue
 	 * @return mixed|null
 	 */
 	public function getQueryParam($name, $defaultValue = null): mixed
