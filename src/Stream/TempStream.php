@@ -16,15 +16,20 @@ use PhpPkg\Http\Message\Stream;
  */
 class TempStream extends Stream
 {
-    /**
-     * TempStream constructor.
-     * @param string $mode
-     * @throws \InvalidArgumentException
-     */
-    public function __construct(string $mode = 'wb+')
-    {
-        $stream = \fopen('php://temp', $mode);
+	/**
+	 * TempStream constructor.
+	 * @param string $mode
+	 * @throws \InvalidArgumentException
+	 */
+	public function __construct(string $mode = 'wb+')
+	{
+		$stream = \fopen('php://temp', $mode);
 
-        parent::__construct($stream);
-    }
+		parent::__construct($stream);
+	}
+
+	public function isWritable(): bool
+	{
+		return true;
+	}
 }

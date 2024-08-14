@@ -332,7 +332,7 @@ class ServerRequest implements ServerRequestInterface
 	}
 
 	/** @var mixed|null */
-	private mixed|null $bodyParsed;
+	private mixed $bodyParsed;
 
 	/**
 	 * @return array|null
@@ -380,7 +380,7 @@ class ServerRequest implements ServerRequestInterface
 	 * @return mixed|null
 	 * @throws RuntimeException
 	 */
-	public function getParsedBody(): ?mixed
+	public function getParsedBody(): mixed
 	{
 		if ($this->bodyParsed !== null) {
 			return $this->bodyParsed;
@@ -430,7 +430,7 @@ class ServerRequest implements ServerRequestInterface
 	 * @param string $body
 	 * @return mixed|null
 	 */
-	private function parseJson(string $body): ?mixed
+	private function parseJson(string $body): mixed
 	{
 		return json_decode($body, true);
 	}
@@ -440,7 +440,7 @@ class ServerRequest implements ServerRequestInterface
 	 * @param string $body
 	 * @return mixed|null
 	 */
-	private function parseUrlEncoded(string $body): ?mixed
+	private function parseUrlEncoded(string $body): mixed
 	{
 		parse_str($body, $parsed);
 		return $parsed;

@@ -11,6 +11,7 @@ namespace PhpPkg\Http\Message;
 
 use InvalidArgumentException;
 use PhpPkg\Http\Message\Stream\FileStream;
+use PhpPkg\Http\Message\Stream\OutputStream;
 use PhpPkg\Http\Message\Traits\CookiesTrait;
 use PhpPkg\Http\Message\Traits\MessageTrait;
 use Psr\Http\Message\ResponseInterface;
@@ -312,6 +313,11 @@ class Response implements ResponseInterface
 		string $protocol = 'HTTP',
 		string $protocolVersion = '1.1'
 	) {
+
+		if ($body === null) {
+			$body = new OutputStream();
+		}
+
 		$this->setCookiesFromArray($cookies);
 		$this->initialize($protocol, $protocolVersion, $headers, $body ?: new Body());
 

@@ -163,7 +163,7 @@ class UploadedFile implements UploadedFileInterface
 
 	private function is_writable(string $path) : bool {
 
-		if ($path{strlen($path)-1}=='/') {
+		if (str_ends_with($path, '/')) {
 			return $this->is_writable($path.uniqid(mt_rand()).'.tmp');
 		}
 
