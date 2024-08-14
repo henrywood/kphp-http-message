@@ -39,9 +39,9 @@ class ServerRequest implements ServerRequestInterface
 	public const EOL = "\r\n";
 
 	/**
-	 * @var mixed
+	 * @var array<string, UploadedFile>
 	 */
-	private mixed $uploadedFiles;
+	private array $uploadedFiles;
 
 	/**
 	 * List of request body parsers (e.g., url-encoded, JSON, XML, multipart)
@@ -49,8 +49,8 @@ class ServerRequest implements ServerRequestInterface
 	 */
 	private array $bodyParsers = [];
 
-	/** @var array */
-	private array $serverParams;
+	/** @var mixed */
+	private mixed $serverParams;
 
 	/** @var Collection */
 	private Collection $attributes;
@@ -70,30 +70,30 @@ class ServerRequest implements ServerRequestInterface
 	 * Request constructor.
 	 *
 	 * @param string          $method
-	 * @param UriInterface    $uri
+	 * @param ?UriInterface   $uri
 	 * @param string          $protocol
 	 * @param string          $protocolVersion
-	 * @param array|Headers|null   $headers
-	 * @param array           $cookies
-	 * @param array           $serverParams
-	 * @param StreamInterface $body
-	 * @param mixed           $uploadedFiles
+	 * @param ?Headers		  $headers
+	 * @param mixed           $cookies
+	 * @param mixed           $serverParams
+	 * @param ?StreamInterface $body
+	 * @param array<string,UploadedFile> $uploadedFiles
 	 *
 	 * @throws RuntimeException
 	 * @throws InvalidArgumentException
 	 */
 	public function __construct(
 		string $method = 'GET',
-		UriInterface $uri = null,
-		array|Headers $headers = null,
+		?UriInterface $uri = null,
+		?Headers $headers = null,
 		array $cookies = [],
-		array $serverParams = [],
-		StreamInterface $body = null,
-		mixed $uploadedFiles = null,
+		mixed $serverParams = [],
+		?StreamInterface $body = null,
+		array $uploadedFiles = [],
 		string $protocol = 'HTTP',
 		string $protocolVersion = '1.1') {
 
-		$this->setCookies($cookies);
+		$this->setCookiesFromArray($cookies);
 		$this->initialize($protocol, $protocolVersion, $headers, $body ?: new RequestBody());
 		$this->initializeRequest($uri, $method);
 

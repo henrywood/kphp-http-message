@@ -280,13 +280,14 @@ class Stream implements StreamInterface
 				$this->readable = false;
 
 				if ($this->isAttached()) {
-					$meta = $this->getMetadata();
-					foreach (self::$modes['readable'] as $mode) {
-						if (str_starts_with($meta['mode'], $mode)) {
-							$this->readable = true;
-							break;
-						}
+
+					$pos = ftell($this->stream);
+					if ($pos === false) {
+						$this->readable = FALSE;
 					}
+					$result = @fread($this->stream, 1);
+					fseek($this->stream, $pos); // Reset to original position
+					$this->readable = ($result !== false && strlen($result) > 0);
 				}
 			}
 		}
@@ -305,12 +306,15 @@ class Stream implements StreamInterface
 			$this->writable = false;
 
 			if ($this->isAttached()) {
-				$meta = $this->getMetadata();
-				foreach (self::$modes['writable'] as $mode) {
-					if (str_starts_with($meta['mode'], $mode)) {
-						$this->writable = true;
-						break;
-					}
+
+				$pos = ftell($this->stream);
+				if ($pos === false) {
+					$this->writable = false;
+				} else {
+
+					$result = @fwrite($this->stream, '');
+					fseek($this->stream, $pos); // Reset to original position
+					$this->writable = $result !== false;
 				}
 			}
 		}
@@ -329,8 +333,8 @@ class Stream implements StreamInterface
 			$this->seekable = false;
 
 			if ($this->isAttached()) {
-				$meta           = $this->getMetadata();
-				$this->seekable = !$this->isPipe() && $meta['seekable'];
+				$result = @fseek($this->stream, 0, SEEK_CUR);
+				$this->seekable = ($result === 0);
 			}
 		}
 

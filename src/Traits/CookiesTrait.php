@@ -18,7 +18,7 @@ trait CookiesTrait
 	/**
 	 * @var Cookies|null
 	 */
-	private ?\PhpPkg\Http\Message\Cookies $cookies = null;
+	private \PhpPkg\Http\Message\Cookies|null $cookies = null;
 
 	/*******************************************************************************
 	 * Cookies
@@ -76,29 +76,10 @@ trait CookiesTrait
 	}
 
 	/**
-	 * @param mixed|\PhpPkg\Http\Message\Cookies $cookies
-	 *
+	 * @param mixed $cookies
 	 * @return static
 	 */
-	public function setCookies(mixed|\PhpPkg\Http\Message\Cookies $cookies): static
-	{
-		if (is_array($cookies) && !is_object($cookies) && ! $cookies instanceof \PhpPkg\Http\Message\Cookies) {
-			return $this->setCookiesFromArray($cookies);
-		} else if (! is_array($cookies) && is_object($cookies) && $cookies instanceof \PhpPkg\Http\Message\Cookies) {
-
-			$this->cookies = $cookies;
-			return $this;			
-		} else {
-			throw new \InvalidArgumentException('Neither array nor Cookies instance');
-
-		}
-	}
-
-	/**
-	 * @param array $cookies
-	 * @return static
-	 */
-	public function setCookiesFromArray(array $cookies): static
+	public function setCookiesFromArray(mixed $cookies): static
 	{
 		if (!$this->cookies) {
 			$this->cookies = new \PhpPkg\Http\Message\Cookies($cookies);

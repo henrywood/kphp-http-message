@@ -19,25 +19,25 @@ use Psr\Http\Message\MessageInterface;
  */
 class Message implements MessageInterface
 {
-    use MessageTrait;
+	use MessageTrait;
 
-    /**
-     * the connection header line data end char
-     */
-    public const EOL = "\r\n";
+	/**
+	 * the connection header line data end char
+	 */
+	public const EOL = "\r\n";
 
-    /**
-     * BaseMessage constructor.
-     *
-     * @param string        $protocol
-     * @param string        $protocolVersion
-     * @param array|Headers|null $headers
-     * @param string $body
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function __construct(string $protocol = 'http', string $protocolVersion = '1.1', array|Headers $headers = null, string $body = '')
-    {
-        $this->initialize($protocol, $protocolVersion, $headers, $body);
-    }
+	/**
+	 * BaseMessage constructor.
+	 *
+	 * @param string        $protocol
+	 * @param string        $protocolVersion
+	 * @param mixed			$headers
+	 * @param string $body
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public function __construct(string $protocol = 'http', string $protocolVersion = '1.1', array|Headers $headers = null, string $body = '')
+	{
+		$this->initialize($protocol, $protocolVersion, $headers, $body);
+	}
 }

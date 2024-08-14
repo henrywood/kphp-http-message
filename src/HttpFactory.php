@@ -9,6 +9,7 @@
 namespace PhpPkg\Http\Message;
 
 use InvalidArgumentException;
+use PhpPkg\Http\Message\Collection as MessageCollection;
 use PhpPkg\Http\Message\Util\Collection;
 use PhpPkg\Http\Message\Request\RequestBody;
 use Psr\Http\Message\RequestInterface;
@@ -105,7 +106,7 @@ class HttpFactory
 
 	/**
 	 * Create a new server request from server variables
-	 * @param array|mixed $server Typically $_SERVER or similar structure.
+	 * @param mixed $server Typically $_SERVER or similar structure.
 	 * @param ?string $class
 	 * @return ServerRequestInterface
 	 * @throws RuntimeException
@@ -114,12 +115,14 @@ class HttpFactory
 	 */
 	public static function createServerRequestFromArray(mixed $server, string $class = null): ServerRequestInterface
 	{
-		$env = self::ensureIsCollection($server);
-		$uri = static::createUriFromArray($env);
+		$env = new Collection($server);
+		$uri = static::createUriFromArray($server);
 
 		$body          = new RequestBody();
 		$method        = $env->get('REQUEST_METHOD', 'GET');
-		$headers       = static::createHeadersFromArray($env);
+		/* @var Headers $headers*/
+		/* @var string[][] $server */
+		$headers       = static::createHeadersFromArray($server);
 		$cookies       = Cookies::parseFromRawHeader($headers->get('Cookie', []));
 		$serverParams  = $env->all();
 		$uploadedFiles = UploadedFile::createFromFILES();
@@ -298,15 +301,15 @@ class HttpFactory
 	}
 
 	/**
-	 * @param array|Collection $env
+	 * @param mixed $array
 	 *
 	 * @return Uri
 	 * @throws InvalidArgumentException
 	 */
-	public static function createUriFromArray(array|Collection $env): Uri
+	public static function createUriFromArray(mixed $array): Uri
 	{
-		/* @var $env Collection */
-		$envColl = self::ensureIsCollection($env);
+
+		$envColl = new Collection($array);
 
 		// Scheme
 		$isSecure = $envColl->get('HTTPS');
@@ -367,14 +370,14 @@ class HttpFactory
 	 ******************************************************************************/
 
 	/**
-	 * @param array|Collection $env
+	 * @param mixed $array
 	 *
 	 * @return Headers
 	 */
-	public static function createHeadersFromArray(array|Collection $env): Headers
+	public static function createHeadersFromArray(mixed $array = []): Headers
 	{
 		$data = [];
-		$envColl  = self::ensureIsCollection($env);
+		$envColl  = new Collection($array);
 		$envColl  = self::determineAuthorization($envColl);
 
 		foreach ($envColl->toArray() as $key => $value) {
@@ -391,6 +394,8 @@ class HttpFactory
 	}
 
 	private static function array_change_key_case(array $arr, int $c = self::CASE_LOWER) {
+
+		$ret = $arr;
 
 		foreach ($arr as $k => $v) {
 
@@ -444,24 +449,5 @@ class HttpFactory
 			}
 		}
 		return $headers;
-	}
-
-	/**
-	 * @param Collection|mixed[] $data
-	 * @return Collection
-	 */
-	public static function ensureIsCollection(Collection|array $data): Collection
-	{
-		if (is_object($data) && $data instanceof Collection) {
-			return $data;
-		} else if (is_array($data)) {
-			return new Collection($data);
-		} else {
-			throw new \InvalidArgumentException('Neither array nor collection');
-		}
-
-		// if (\is_object($data) && \method_exists($data, 'get')) {
-		//     return $data;
-		// }
 	}
 }

@@ -63,7 +63,7 @@ trait RequestHeadersTrait
 	{
 		$result = $this->getHeader('Content-Type');
 
-		return $result ? $result[0] : '';
+		return $result ? (string)$result[0] : '';
 	}
 
 	/**

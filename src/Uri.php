@@ -101,13 +101,14 @@ class Uri implements UriInterface
 	}
 
 	/**
-	 * Create new Uri from string.
+	 * Create new Uri from string
+	 *
 	 * @param  string $uri Complete Uri string
 	 *     (i.e., https://user:pass@host:443/path?query).
-	 * @return self
+	 * @return Uri
 	 * @throws InvalidArgumentException
 	 */
-	public static function createFromString(string $uri): self
+	public static function createFromString(string $uri): Uri
 	{
 		$parts    = (array) parse_url($uri);
 		$scheme   = (string)$parts['scheme'] ?? '';

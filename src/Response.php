@@ -130,7 +130,7 @@ class Response implements ResponseInterface
 	/**
 	 * @param int                  $status
 	 * @param null                 $headers
-	 * @param array                $cookies
+	 * @param mixed                $cookies
 	 * @param StreamInterface|null $body
 	 * @param string               $protocol
 	 * @param string               $protocolVersion
@@ -289,7 +289,7 @@ class Response implements ResponseInterface
 		}
 
 		// Output the response body
-		die($response->getBody());	
+		die((string)$response->getBody());	
 	}
 
 	/**
@@ -312,7 +312,7 @@ class Response implements ResponseInterface
 		string $protocol = 'HTTP',
 		string $protocolVersion = '1.1'
 	) {
-		$this->setCookies($cookies);
+		$this->setCookiesFromArray($cookies);
 		$this->initialize($protocol, $protocolVersion, $headers, $body ?: new Body());
 
 		$this->status = $this->filterStatus($status);

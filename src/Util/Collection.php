@@ -19,17 +19,17 @@ class Collection
 	public function add(string $name, $value): void
 	{
 		if (isset($this->items[$name])) {
-			return $this;
+			return;
 		}
 
 		$this->items[$name] = $value;
 	}
 
 	/**
-	 * @param array $values
+	 * @param mixed $values
 	 * @return static
 	 */
-	public function sets(array $values): static
+	public function sets(mixed $values): static
 	{
 		$this->items = $values;
 		return $this;
@@ -52,7 +52,7 @@ class Collection
 	// Check if a key exists
 	public function has(string $key): bool
 	{
-		return array_key_exists($key, $items);
+		return array_key_exists($key, $this->items);
 	}
 
 	// Remove item by key
@@ -102,9 +102,11 @@ class Collection
 	}
 
 	// Convert collection to a string
-	public function __toString(): string|false
+	public function __toString(): string
 	{
-		return json_encode($this->items);
+		$encoded = json_encode($this->items);
+		if ($encoded === FALSE) return '';
+		return $encoded;
 	}
 }
 

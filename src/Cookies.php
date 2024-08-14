@@ -142,7 +142,7 @@ class Cookies extends Collection
 	{
 		$cookieValue = '';
 
-		foreach ($this as $name => $value) {
+		foreach ($this->toArray() as $name => $value) {
 			$cookieValue .= \urlencode($name) . '=' . \urlencode($value['value']) . '; ';
 		}
 

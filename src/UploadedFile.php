@@ -71,9 +71,9 @@ class UploadedFile implements UploadedFileInterface
 
 	/**
 	 * Create a normalized tree of UploadedFile instances from the Environment.
-	 * @return array|null A normalized tree of UploadedFile instances or null if none are provided.
+	 * @return array<string, UploadedFile> A normalized tree of UploadedFile instances or null if none are provided.
 	 */
-	public static function createFromFILES(): ?array
+	public static function createFromFILES(): array
 	{
 		if (count($_FILES)) {
 			return static::parseUploadedFiles($_FILES);
@@ -86,10 +86,11 @@ class UploadedFile implements UploadedFileInterface
 	 * Parses an array of uploaded files into an associative array of UploadedFile instances.
 	 *
 	 * @param mixed $uploadedFiles The uploaded files data.
-	 * @return array<string, UploadedFile|array<int, UploadedFile>> An associative array where keys are field names, and values are UploadedFile instances or arrays of UploadedFile instances.
+	 * @return  array<string,UploadedFile> associative array where keys are field names, and values are UploadedFile instances or arrays of UploadedFile instances.
 	 */
-	public static function parseUploadedFiles(mixed $uploadedFiles): array
+	public static function parseUploadedFiles($uploadedFiles) : array
 	{
+		/* */
 		$parsed = [];
 
 		foreach ($uploadedFiles as $field => $uploadedFile) {

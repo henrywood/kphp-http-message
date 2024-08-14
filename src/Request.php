@@ -25,80 +25,80 @@ use Psr\Http\Message\UriInterface;
  */
 class Request implements RequestInterface
 {
-    use RequestTrait, RequestHeadersTrait;
+	use RequestTrait, RequestHeadersTrait;
 
-    public const FAV_ICON = '/favicon.ico';
+	public const FAV_ICON = '/favicon.ico';
 
-    /**
-     * Request constructor.
-     *
-     * @param string          $method
-     * @param UriInterface    $uri
-     * @param string          $protocol
-     * @param string          $protocolVersion
-     * @param array|Headers|null   $headers
-     * @param StreamInterface $body
-     *
-     * @throws \RuntimeException
-     * @throws \InvalidArgumentException
-     */
-    public function __construct(
-        string $method = 'GET',
-        UriInterface $uri = null,
-        array|Headers $headers = null,
-        StreamInterface $body = null,
-        string $protocol = 'HTTP',
-        string $protocolVersion = '1.1'
-    ) {
-        $this->initialize($protocol, $protocolVersion, $headers, $body ?: new RequestBody());
-        $this->initializeRequest($uri, $method);
+	/**
+	 * Request constructor.
+	 *
+	 * @param string          $method
+	 * @param string|UriInterface    $uri
+	 * @param string          $protocol
+	 * @param string          $protocolVersion
+	 * @param ?array		  $headers
+	 * @param StreamInterface $body
+	 *
+	 * @throws \RuntimeException
+	 * @throws \InvalidArgumentException
+	 */
+	public function __construct(
+		string $method = 'GET',
+		UriInterface $uri = null,
+		?array $headers = null,
+		StreamInterface $body = null,
+		string $protocol = 'HTTP',
+		string $protocolVersion = '1.1'
+	) {
+		$this->initialize($protocol, $protocolVersion, $headers, $body ?: new RequestBody());
+		$this->initializeRequest($uri, $method);
 
 
-        if (!$this->headers->has('Host') || $this->getUri()->getHost() !== '') {
-            $this->headers->set('Host', $this->getUri()->getHost());
-        }
-    }
+		if (!$this->headers->has('Host') || $this->getUri()->getHost() !== '') {
+			$this->headers->set('Host', $this->getUri()->getHost());
+		}
+	}
 
-    public function __clone()
-    {
-        $this->headers = clone $this->headers;
-        $this->body    = clone $this->body;
-    }
+	public function __clone()
+	{
+		$this->headers = clone $this->headers;
+		$this->body    = clone $this->body;
+	}
 
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        try {
-            return $this->toString();
-        } catch (\Throwable $e) {
-            return '';
-        }
-    }
+	/**
+	 * @return string
+	 */
+	public function __toString()
+	{
+		try {
+			return $this->toString();
+		} catch (\Throwable $e) {
+			return '';
+		}
+	}
 
-    /**
-     * build response data
-     * @return string
-     * @throws \RuntimeException
-     * @throws \InvalidArgumentException
-     */
-    public function toString(): string
-    {
-        // first line
-        $output = $this->buildFirstLine() . "\r\n";
+	/**
+	 * build response data
+	 * @return string
+	 * @throws \RuntimeException
+	 * @throws \InvalidArgumentException
+	 */
+	public function toString(): string
+	{
+		// first line
+		$output = $this->buildFirstLine() . "\r\n";
 
-        // add headers
-        $output .= $this->headers->toHeaderLines(true);
+		// add headers
+		$output .= $this->headers->toHeaderLines(true);
 
-        // append cookies
-        // if ($cookie = $this->cookies->toRequestHeader()) {
-        //     $output .= "Cookie: $cookie\r\n";
-        // }
+		// append cookies
+		// if ($cookie = $this->cookies->toRequestHeader()) {
+		//     $output .= "Cookie: $cookie\r\n";
+		// }
 
-        $output .= "\r\n";
+		$output .= "\r\n";
 
-        return $output . $this->getBody();
-    }
+		return $output . $this->getBody();
+	}
 
 }

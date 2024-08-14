@@ -40,9 +40,9 @@ trait RequestTrait
 
 	/**
 	 * Valid request methods
-	 * @var string[]
+	 * @var mixed
 	 */
-	private array $validMethods = [
+	private mixed $validMethods = [
 		'CONNECT' => 1,
 		'DELETE'  => 1,
 		'GET'     => 1,
@@ -55,12 +55,12 @@ trait RequestTrait
 	];
 
 	/**
-	 * @param string|\Psr\Http\Message\UriInterface|null $uri
+	 * @param \Psr\Http\Message\UriInterface|null $uri
 	 * @param string|null $method
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	protected function initializeRequest(\Psr\Http\Message\UriInterface|string $uri = null, string $method = null): void
+	protected function initializeRequest($uri = null, string $method = null): void
 	{
 		try {
 			$this->originalMethod = $this->filterMethod((string)$method);
@@ -69,7 +69,11 @@ trait RequestTrait
 			throw $e;
 		}
 
-		$this->uri = $this->createUri($uri);
+		if ($uri === null) {
+			$this->uri = new \PhpPkg\Http\Message\Uri();
+		} else {
+			$this->uri = $uri;		
+		}
 	}
 
 	/**
@@ -87,30 +91,6 @@ trait RequestTrait
 			$this->getProtocol(),
 			$this->getProtocolVersion()
 		);
-	}
-
-	/**
-	 * @param string|\Psr\Http\Message\UriInterface|null $uri
-	 *
-	 * @return \Psr\Http\Message\UriInterface
-	 * @throws \InvalidArgumentException
-	 */
-	private function createUri(\Psr\Http\Message\UriInterface|string|null $uri): \Psr\Http\Message\UriInterface
-	{
-		if (is_object($uri) && $uri instanceof \Psr\Http\Message\UriInterface) {
-			return $uri;
-		}
-		if (is_string($uri)) {
-			return \PhpPkg\Http\Message\Uri::createFromString($uri);
-		}
-		if ($uri === null) {
-			return new \PhpPkg\Http\Message\Uri();
-		}
-		throw new \InvalidArgumentException(
-			'Invalid URI provided; must be null, a string, or a Psr\Http\Message\UriInterface instance'
-		);
-
-
 	}
 
 	/*******************************************************************************
@@ -131,9 +111,7 @@ trait RequestTrait
 				$this->method = $this->filterMethod($customMethod);
 			} elseif ($this->originalMethod === 'POST') {
 				$overrideMethod = $this->filterMethod((string)$this->getParsedBodyParam('_METHOD'));
-				if ($overrideMethod !== null) {
-					$this->method = $overrideMethod;
-				}
+				$this->method = $overrideMethod;
 
 				if ($this->getBody()->eof()) {
 					$this->getBody()->rewind();
