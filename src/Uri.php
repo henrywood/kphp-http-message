@@ -112,13 +112,13 @@ class Uri implements UriInterface
 	{
 		$parts    = (array) parse_url($uri);
 		$scheme   = (string)$parts['scheme'] ?? '';
-		$user     = (string)$parts['user'] ?? '';
-		$pass     = (string)$parts['pass'] ?? '';
+		$user     = (array_key_exists('user', $parts)) ? (string) $parts['user'] : '';
+		$pass     = (array_key_exists('pass', $parts)) ? (string) $parts['pass'] : '';
 		$host     = (string)$parts['host'] ?? '';
 		$port     = (isset($parts['port'])) ? (int) $parts['port'] : null;
 		$path     = (string)$parts['path'] ?? '';
 		$query    = (string)$parts['query'] ?? '';
-		$fragment = (string)$parts['fragment'] ?? '';
+		$fragment = (array_key_exists('fragment', $parts)) ? (string) $parts['fragment'] : '';
 
 		return new static($scheme, $host, $port, $path, $query, $fragment, $user, $pass);
 	}
