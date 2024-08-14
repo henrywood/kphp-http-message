@@ -43,7 +43,7 @@ class OutputStream extends Stream
 		$content = '';
 
 		// Read the stream in chunks until the end of the stream
-		$output = fopen('php://output', 'wb');
+		$output = fopen('php://stdout', 'wb');
 
 		while (!\feof($this->stream)) {
 			// Read a chunk of data (e.g., 8192 bytes)
