@@ -12,6 +12,7 @@ use InvalidArgumentException;
 use PhpPkg\Http\Message\Collection as MessageCollection;
 use PhpPkg\Http\Message\Util\Collection;
 use PhpPkg\Http\Message\Request\RequestBody;
+use PhpPkg\Http\Message\Request\KPHPRequestBody;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -118,7 +119,12 @@ class HttpFactory
 		$env = new Collection($server);
 		$uri = static::createUriFromArray($server);
 
+		#ifndef KPHP		
 		$body          = new RequestBody();
+		if (FALSE) 
+			#endif
+			$body			= new KPHPRequestBody();
+
 		$method        = $env->get('REQUEST_METHOD', 'GET');
 		/* @var Headers $headers*/
 		/* @var string[][] $server */
@@ -160,8 +166,11 @@ class HttpFactory
 		if (!$rawHeader = $two[0] ?? '') {
 			return new ServerRequest('GET', Uri::createFromString('/'));
 		}
-
+		#ifndef KPHP
 		$body = $two[1] ? new RequestBody($two[1]) : null;
+		if (FALSE)
+			#endif 
+			$body = $two[1] ? new KPHPRequestBody($two[1]) : null;
 
 		/** @var array $list */
 		$list = explode("\n", trim($rawHeader));
@@ -219,7 +228,11 @@ class HttpFactory
 	 */
 	public static function createStream(string $content = ''): StreamInterface
 	{
+		#ifndef KPHP		
 		return new RequestBody($content);
+		if (FALSE)		
+			#endif	
+			return new KPHPRequestBody($content);	
 	}
 
 	/**

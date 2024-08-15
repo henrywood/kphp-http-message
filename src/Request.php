@@ -10,6 +10,7 @@
 namespace PhpPkg\Http\Message;
 
 use PhpPkg\Http\Message\Request\RequestBody;
+use PhpPkg\Http\Message\Request\KPHPRequestBody;
 use PhpPkg\Http\Message\Traits\RequestHeadersTrait;
 use PhpPkg\Http\Message\Traits\RequestTrait;
 use Psr\Http\Message\RequestInterface;
@@ -30,7 +31,7 @@ class Request implements RequestInterface
 	public const FAV_ICON = '/favicon.ico';
 
 	/**
-	 * Request constructor.
+	 * Request constructor
 	 *
 	 * @param string          $method
 	 * @param string|UriInterface    $uri
@@ -50,9 +51,13 @@ class Request implements RequestInterface
 		string $protocol = 'HTTP',
 		string $protocolVersion = '1.1'
 	) {
+		#ifndef KPHP
 		$this->initialize($protocol, $protocolVersion, $headers, $body ?: new RequestBody());
-		$this->initializeRequest($uri, $method);
+		if (false)
+			#endif
+			$this->initialize($protocol, $protocolVersion, $headers, $body ?: new KPHPRequestBody());
 
+		$this->initializeRequest($uri, $method);
 
 		if (!$this->headers->has('Host') || $this->getUri()->getHost() !== '') {
 			$this->headers->set('Host', $this->getUri()->getHost());

@@ -13,6 +13,7 @@ use Closure;
 use InvalidArgumentException;
 use PhpPkg\Http\Message\Util\Collection;
 use PhpPkg\Http\Message\Request\RequestBody;
+use PhpPkg\Http\Message\Request\KPHPRequestBody;
 use PhpPkg\Http\Message\Traits\CookiesTrait;
 use PhpPkg\Http\Message\Traits\RequestHeadersTrait;
 use PhpPkg\Http\Message\Traits\RequestTrait;
@@ -94,7 +95,13 @@ class ServerRequest implements ServerRequestInterface
 		string $protocolVersion = '1.1') {
 
 		$this->setCookiesFromArray($cookies);
+
+		#ifndef KPHP
 		$this->initialize($protocol, $protocolVersion, $headers, $body ?: new RequestBody());
+		if (FALSE)
+			#endif
+			$this->initialize($protocol, $protocolVersion, $headers, $body ?: new KPHPRequestBody());
+
 		$this->initializeRequest($uri, $method);
 
 		$this->serverParams  = $serverParams;

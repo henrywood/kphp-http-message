@@ -162,12 +162,10 @@ class Cookies extends Collection
 	{
 		$cookies = [];
 
-		if (\is_array($cookieText)) {
+		if (\is_array($cookieText) && count($cookieText) > 0) {
 			$cookieText = \array_shift($cookieText) ?: '';
-		}
-
-		if (!\is_string($cookieText)) {
-			throw new \InvalidArgumentException('Cannot parse Cookie data. Header value must be a string.');
+		} else if (\is_array($cookieText) && count($cookieText) == 0) {
+			$cookieText = '';
 		}
 
 		if (!$cookieText) {

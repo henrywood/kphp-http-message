@@ -9,10 +9,10 @@
 namespace PhpPkg\Http\Message\Stream;
 
 #ifndef KPHP
-const _KPHP_VERSION = 0;
+define('PHPPKG_HTTP_MESSAGE_STREAM_KPHP_VERSION', 0);
 if (false)
 	#endif
-	const _KPHP_VERSION = 1;
+	define('PHPPKG_HTTP_MESSAGE_STREAM_KPHP_VERSION', 1);
 
 use PhpPkg\Http\Message\Stream;
 use PhpPkg\Http\Message\Stream\InMemoryStream;
@@ -26,13 +26,14 @@ class OutputStream extends Stream
 	private InMemoryStream $memory;
 
 	/**
-	 * OutputStream constructor.
+	 * OutputStream constructor
+	 *
 	 * @param string $mode
 	 * @throws \InvalidArgumentException
 	 */
 	public function __construct(string $mode = 'wb+')
 	{
-		if (_KPHP_VERSION) {
+		if (PHPPKG_HTTP_MESSAGE_STREAM_KPHP_VERSION) {
 			$this->memory = new InMemoryStream();
 		} else {
 			$stream = \fopen('php://memory', $mode);
@@ -48,7 +49,7 @@ class OutputStream extends Stream
 
 	public function __toString() : string {
 
-		if (_KPHP_VERSION) {
+		if (PHPPKG_HTTP_MESSAGE_STREAM_KPHP_VERSION) {
 
 			$this->memory->rewind();
 
@@ -80,35 +81,35 @@ class OutputStream extends Stream
 	 * @return void
 	 */
 	public function close() : void {
-		if (! _KPHP_VERSION) parent::close();
+		if (! PHPPKG_HTTP_MESSAGE_STREAM_KPHP_VERSION) parent::close();
 	}
 
 	/*
 	 * @return mixed|null
 	 */
 	public function detach() {
-		return (_KPHP_VERSION) ? null : parent::detach();
+		return (PHPPKG_HTTP_MESSAGE_STREAM_KPHP_VERSION) ? null : parent::detach();
 	}
 
 	/* 
 	 * @return int|null
 	 */
 	public function getSize() : ?int {
-		return (_KPHP_VERSION) ? $this->memory->getSize() : parent::getSize();
+		return (PHPPKG_HTTP_MESSAGE_STREAM_KPHP_VERSION) ? $this->memory->getSize() : parent::getSize();
 	}
 
 	/**
 	 * @return int Position of the file pointer
 	 */
 	public function tell() : int {
-		return (_KPHP_VERSION) ? $this->memory->tell() : parent::tell();
+		return (PHPPKG_HTTP_MESSAGE_STREAM_KPHP_VERSION) ? $this->memory->tell() : parent::tell();
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function eof() : bool {
-		return (_KPHP_VERSION) ? $this->memory->eof() : parent::eof();
+		return (PHPPKG_HTTP_MESSAGE_STREAM_KPHP_VERSION) ? $this->memory->eof() : parent::eof();
 	}
 
 	/**
@@ -123,7 +124,7 @@ class OutputStream extends Stream
 	 * @return int
 	 */
 	public function write($string) : int {
-		if (_KPHP_VERSION) {
+		if (PHPPKG_HTTP_MESSAGE_STREAM_KPHP_VERSION) {
 			return $this->memory->write($string);
 		} else {
 			return parent::write($string);
@@ -135,21 +136,21 @@ class OutputStream extends Stream
 	 * @return string
 	 */
 	public function read($length) : string {
-		return (_KPHP_VERSION) ? $this->memory->read($length) : parent::read($length);
+		return (PHPPKG_HTTP_MESSAGE_STREAM_KPHP_VERSION) ? $this->memory->read($length) : parent::read($length);
 	}
 
 	/**
 	 * @return string 
 	 */
 	public function getContents() : string {
-		return (_KPHP_VERSION) ? $this->memory->getContents() : parent::getContents();
+		return (PHPPKG_HTTP_MESSAGE_STREAM_KPHP_VERSION) ? $this->memory->getContents() : parent::getContents();
 	}
 
 	/**
 	 * @param string|null $key 
 	 */
 	public function getMetadata(?string $key = null) : ?array {
-		return (_KPHP_VERSION) ? $this->memory->getMetadata($key) : parent::getMetadata($key);
+		return (PHPPKG_HTTP_MESSAGE_STREAM_KPHP_VERSION) ? $this->memory->getMetadata($key) : parent::getMetadata($key);
 	}
 }
 

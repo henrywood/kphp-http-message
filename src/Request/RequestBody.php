@@ -9,6 +9,7 @@
 namespace PhpPkg\Http\Message\Request;
 
 use PhpPkg\Http\Message\Stream;
+use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
 /**
@@ -16,7 +17,7 @@ use RuntimeException;
  *   Provides a PSR-7 implementation of a reusable raw request body
  * @package PhpPkg\Http\Message\Request
  */
-class RequestBody extends Stream
+class RequestBody extends Stream  implements StreamInterface
 {
 	/**
 	 * Create a new RequestBody.
@@ -37,7 +38,7 @@ class RequestBody extends Stream
 			throw new RuntimeException('Unable to open php://input stream');
 		}
 
-		$this->copyStream($inputStream, $stream);
+		stream_copy_to_stream($inputStream, $stream);
 
 		fclose($inputStream);
 		rewind($stream);
@@ -46,24 +47,6 @@ class RequestBody extends Stream
 
 		if ($content !== null) {
 			$this->write($content);
-		}
-	}
-
-	/**
-	 * Copy data from one stream to another.
-	 *
-	 */
-	private function copyStream($source, $destination, int $chunkSize = 8192): void
-	{
-		while (!feof($source)) {
-			$chunk = fread($source, $chunkSize);
-			if ($chunk === false) {
-				throw new RuntimeException('Error reading from source stream');
-			}
-			$written = fwrite($destination, $chunk);
-			if ($written === false) {
-				throw new RuntimeException('Error writing to destination stream');
-			}
 		}
 	}
 }
