@@ -10,6 +10,7 @@ namespace PhpPkg\Http\Message\Request;
 
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
+use FFI;
 
 /**
  * Class RequestBody
@@ -23,16 +24,26 @@ class KPHPRequestBody implements StreamInterface {
 
 	public function __construct(string $content = null)
 	{
-		$stdinContent = '';
-		$fp = fopen('php://input', 'r');
+		if (php_sapi_name() !== 'cli') { // Running SERVER
+			$stdinContent = file_get_contents('php://input');
+		} else {
+			$stdinContent = '';
+#ifndef KPHP
+			stream_set_blocking(STDIN, FALSE);
+#endif
+			// Read from STDIN
+			while (!feof(STDIN)) {
+				$line = fgets(STDIN);
+				if ($line === false) {
+					break;
+				}
+				$stdinContent .= $line;
+			}
 
-		while(!feof($fp)) {
-
-			$line = fgets($fp, 8192);
-			$stdinContent.=$line;
+			$stdinContent = rtrim($stdinContent);
 		}
 
-		$this->data = $stdinContent;
+		$this->data = (string)$stdinContent;
 		$this->position = 0;
 
 		if ($content !== null) {
