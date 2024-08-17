@@ -4,7 +4,7 @@
 [![Php Version](https://img.shields.io/badge/php-%3E=8.0.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/phppkg/http-message)
 [![Latest Stable Version](http://img.shields.io/packagist/v/phppkg/http-message.svg)](https://packagist.org/packages/phppkg/http-message)
 
-http message 库，实现自 PSR 7。
+http message implementing PSR 7 for KPHP and PHP。
 
 ## Install
 
@@ -21,7 +21,7 @@ http message 库，实现自 PSR 7。
 - 通过 `composer require`
 
 ```bash
-composer require phppkg/http-message
+composer require henrywood/kphp-http-message
 ```
 
 - git拉取
