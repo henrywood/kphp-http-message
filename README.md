@@ -6,14 +6,14 @@
 
 http message 库，实现自 PSR 7。
 
-## 安装
+## Install
 
 - 通过 `composer.json`
 
 编辑 `composer.json`，在 `require` 添加
 
 ```
-"phppkg/http-message": "dev-master",
+"henrywood/kphp-http-message": "`2.0",
 ```
 
 保存，然后执行: `composer update`
@@ -27,7 +27,7 @@ composer require phppkg/http-message
 - git拉取
 
 ```bash
-git clone https://github.com/phppkg/http-message.git // github
+git clone https://github.com/henrywood/kphp-http-message.git // github
 ```
 
 ## 使用
