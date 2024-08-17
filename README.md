@@ -8,15 +8,15 @@ http message implementing PSR 7 for KPHP and PHP。
 
 ## Install
 
-- 通过 `composer.json`
+- Edit `composer.json`
 
-编辑 `composer.json`，在 `require` 添加
+Open `composer.json`，add `require` 
 
 ```
 "henrywood/kphp-http-message": "`2.0",
 ```
 
-保存，然后执行: `composer update`
+Save and then execute: `composer update`
 
 - 通过 `composer require`
 
