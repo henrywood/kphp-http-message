@@ -18,7 +18,7 @@ Open `composer.json`，add `require`
 
 Save and then execute: `composer update`
 
-- 通过 `composer require`
+- Or use `composer require`
 
 ```bash
 composer require henrywood/kphp-http-message
@@ -30,9 +30,9 @@ composer require henrywood/kphp-http-message
 git clone https://github.com/henrywood/kphp-http-message.git // github
 ```
 
-## 使用
+## Use
 
-### 基本使用
+### Basic Use
 
 ```php
 use PhpPkg\Http\Message\Request;
