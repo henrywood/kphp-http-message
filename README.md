@@ -1,4 +1,11 @@
-# http message
+# kphp http message
+
+## Fork
+
+This is a KPHP-compatible PSR-7 implementation forked from 
+
+- **github** https://github.com/phppkg/http-message
+  
 
 [![License](https://img.shields.io/packagist/l/phppkg/http-message.svg?style=flat-square)](LICENSE)
 [![Php Version](https://img.shields.io/badge/php-%3E=8.0.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/phppkg/http-message)
@@ -60,14 +67,14 @@ $request = HttpFactory::createServerRequestFromArray($_SERVER);
 $response = HttpFactory::createResponse($code);
 ```
 
-### 扩展
+### Extensions
 
 ```php
 use PhpPkg\Http\Message\Request;
 use PhpPkg\Http\Message\Traits\ExtendedRequestTrait;
 
 class MyRequest extends Request {
-   use ExtendedRequestTrait; // 里面提供的更多方便使用的方法
+   use ExtendedRequestTrait; /
 }
 
 // 
@@ -87,9 +94,6 @@ class MyResponse extends Response {
 }
 ```
 
-## 项目地址
-
-- **github** https://github.com/henrywood/kphp-http-message
 
 ## License
 
