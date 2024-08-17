@@ -1,5 +1,12 @@
 # kphp http message
 
+http message implementing PSR 7 for KPHP and PHP
+
+[![License](https://img.shields.io/packagist/l/phppkg/http-message.svg?style=flat-square)](LICENSE)
+[![Php Version](https://img.shields.io/badge/php-%3E=8.0.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/phppkg/http-message)
+[![Latest Stable Version](http://img.shields.io/packagist/v/phppkg/http-message.svg)](https://packagist.org/packages/phppkg/http-message)
+
+
 ## Fork
 
 This is a KPHP-compatible PSR-7 implementation forked from 
@@ -7,11 +14,8 @@ This is a KPHP-compatible PSR-7 implementation forked from
 - **github** https://github.com/phppkg/http-message
   
 
-[![License](https://img.shields.io/packagist/l/phppkg/http-message.svg?style=flat-square)](LICENSE)
-[![Php Version](https://img.shields.io/badge/php-%3E=8.0.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/phppkg/http-message)
-[![Latest Stable Version](http://img.shields.io/packagist/v/phppkg/http-message.svg)](https://packagist.org/packages/phppkg/http-message)
 
-http message implementing PSR 7 for KPHP and PHP。
+。
 
 ## Install
 
