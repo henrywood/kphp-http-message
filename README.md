@@ -44,9 +44,9 @@ $response = new Response($code);
 ... ...
 ```
 
-### 工厂方法
+Factory Method
 
-使用提供的工厂方法可以快速创建想要的实例对象。
+Use the provided factory method to quickly create the desired instance object.
 
 ```php
 use PhpPkg\Http\Message\HttpFactory;
@@ -89,7 +89,7 @@ class MyResponse extends Response {
 
 ## 项目地址
 
-- **github** https://github.com/phppkg/http-message
+- **github** https://github.com/henrywood/kphp-http-message
 
 ## License
 
