@@ -1,38 +1,49 @@
-# http message
+# kphp http message
+
+http message implementing PSR 7 for KPHP and PHP
 
 [![License](https://img.shields.io/packagist/l/phppkg/http-message.svg?style=flat-square)](LICENSE)
 [![Php Version](https://img.shields.io/badge/php-%3E=8.0.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/phppkg/http-message)
 [![Latest Stable Version](http://img.shields.io/packagist/v/phppkg/http-message.svg)](https://packagist.org/packages/phppkg/http-message)
 
-http message 库，实现自 PSR 7。
 
-## 安装
+## Fork
 
-- 通过 `composer.json`
+This is a KPHP-compatible PSR-7 implementation forked from 
 
-编辑 `composer.json`，在 `require` 添加
+- **github** https://github.com/phppkg/http-message
+  
+
+
+。
+
+## Install
+
+- Edit `composer.json`
+
+Open `composer.json`，add `require` 
 
 ```
-"phppkg/http-message": "dev-master",
+"henrywood/kphp-http-message": "`2.0",
 ```
 
-保存，然后执行: `composer update`
+Save and then execute: `composer update`
 
-- 通过 `composer require`
+- Or use `composer require`
 
 ```bash
-composer require phppkg/http-message
+composer require henrywood/kphp-http-message
 ```
 
 - git拉取
 
 ```bash
-git clone https://github.com/phppkg/http-message.git // github
+git clone https://github.com/henrywood/kphp-http-message.git // github
 ```
 
-## 使用
+## Use
 
-### 基本使用
+### Basic Use
 
 ```php
 use PhpPkg\Http\Message\Request;
@@ -44,9 +55,9 @@ $response = new Response($code);
 ... ...
 ```
 
-### 工厂方法
+Factory Method
 
-使用提供的工厂方法可以快速创建想要的实例对象。
+Use the provided factory method to quickly create the desired instance object.
 
 ```php
 use PhpPkg\Http\Message\HttpFactory;
@@ -60,14 +71,14 @@ $request = HttpFactory::createServerRequestFromArray($_SERVER);
 $response = HttpFactory::createResponse($code);
 ```
 
-### 扩展
+### Extensions
 
 ```php
 use PhpPkg\Http\Message\Request;
 use PhpPkg\Http\Message\Traits\ExtendedRequestTrait;
 
 class MyRequest extends Request {
-   use ExtendedRequestTrait; // 里面提供的更多方便使用的方法
+   use ExtendedRequestTrait; /
 }
 
 // 
@@ -87,9 +98,6 @@ class MyResponse extends Response {
 }
 ```
 
-## 项目地址
-
-- **github** https://github.com/phppkg/http-message
 
 ## License
 
