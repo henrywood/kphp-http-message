@@ -273,16 +273,28 @@ class Response implements ResponseInterface
 		$this->getBody()->write($content);
 	}
 
+	public function status(int $status, string $reasonPhrase = '') : void {
+		$this->setStatus($status, $reasonPhrase);
+	}
+
+	public function header(string $name, string $value) {
+		$this->headers->add($name, $value);
+	}
+
 	/**
 	 * Helper to simply send a string response and end the response
 	 */
-	public function end(string $content = '', int $code = 200) : void {
+	public function end(string $content = '', int $code = null) : void {
 
 		$preContent = ob_get_clean() ?? '';
 
 		$this->getBody()->write($preContent.$content);		
 
-		$response = $this->withBody($this->getBody())->withStatus($code);
+		$status = (is_null($code)) ? 200 : $code;
+
+		$response = $this->withBody($this->getBody())->withStatus($status);
+
+		header($response->buildFirstLine());
 
 		// Output the response headers
 		foreach ($response->getHeaders() as $name => $values) {
@@ -423,7 +435,7 @@ class Response implements ResponseInterface
 
 	/**
 	 * Return an instance with the specified status code and, optionally, reason phrase.
-	 * If no reason phrase is specified, implementations MAY choose to default
+	 * If no reason phrase is s,pecified, implementations MAY choose to default
 	 * to the RFC 7231 or IANA recommended reason phrase for the response's
 	 * status code.
 	 * This method MUST be implemented in such a way as to retain the
