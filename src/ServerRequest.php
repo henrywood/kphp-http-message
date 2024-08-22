@@ -768,6 +768,102 @@ class ServerRequest implements ServerRequestInterface
 	}
 
 	/*******************************************************************************
+         * HTMX
+	 ******************************************************************************/
+	/**
+	* Indicates that the request is sent by HTMX
+	*
+	* @return bool
+	*/
+	public function isHtmxRequest(): bool
+	{
+		if ($this->hasHeader('HX-Request')) {
+			return TRUE;
+		}
+	
+		return FALSE;
+	}
+	
+	/**
+	* Indicates that the request is via an element using hx-boost.
+	*
+	* @return bool
+	*/
+	public function isBoosted(): bool
+	{
+	
+		if ($this->hasHeader('HX-Boosted')) {
+			return TRUE;
+		}
+	
+		return FALSE;
+	}
+	
+	/**
+	* The current URL of the browser when the htmx request was made.
+	*
+	* @return string|null
+	*/
+	public function getCurrentUrl(): ?string
+	{
+		return $this->getHeader('HX-Current-Url')[0] ?? NULL;
+	}
+	
+	/**
+	* Indicates if the request is for history restoration after a miss in the local history cache
+	*
+	* @return bool
+	*/
+	public function isHistoryRestoreRequest(): bool
+	{
+		if ($this->hasHeader('HX-History-Restore-Request')) {
+			return TRUE;
+		}
+	
+		return FALSE;
+	}
+	
+	/**
+	* The user response to an hx-prompt.
+	*
+	* @return string|null
+	*/
+	public function getPromptResponse(): ?string
+	{
+		return $this->getHeader('HX-Prompt')[0] ?? NULL;
+	}
+	
+	/**
+	* The id of the target element if it exists.
+	*
+	* @return string|null
+	*/
+	public function getTarget(): ?string
+	{
+		return $this->getHeader('HX-Target')[0] ?? NULL;
+	}
+	
+	/**
+	* The name of the triggered element if it exists.
+	*
+	* @return string|null
+	*/
+	public function getTriggerName(): ?string
+	{
+		return $this->getHeader('HX-Trigger-Name')[0] ?? NULL;
+	}
+	
+	/**
+	* The id of the triggered element if it exists.
+	*
+	* @return string|null
+	*/
+	public function getTriggerId(): ?string
+	{
+		return $this->getHeader('HX-Trigger')[0] ?? NULL;
+	}
+
+	/*******************************************************************************
 	 * Server Params
 	 ******************************************************************************/
 
