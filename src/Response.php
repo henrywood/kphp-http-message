@@ -33,6 +33,21 @@ class Response implements ResponseInterface
 	use CookiesTrait;
 	use MessageTrait;
 
+	/****************************************************
+ 	 * HTMX - BEGIN
+         ***************************************************/
+	
+	private array $triggers = [];
+	private array $triggersAfterSettle = [];
+	private array $triggersAfterSwap = [];
+	private bool $triggersAppended = FALSE;
+
+	const STOP_POLL_CODE = 206;	
+	
+	/****************************************************
+         * HTMX - END
+	 ***************************************************/
+	
 	/**
 	 * the connection header line data end char
 	 */
@@ -296,6 +311,8 @@ class Response implements ResponseInterface
 
 		header($response->buildFirstLine());
 
+		if (! $this->triggersAppended) $this->appendTriggers();
+		
 		// Output the response headers
 		foreach ($response->getHeaders() as $name => $values) {
 			header($name . ': ' . implode(', ', $values));
@@ -429,6 +446,84 @@ class Response implements ResponseInterface
 			->withHeader('Location', $url);
 	}
 
+	/*******************************************************************************
+	 * HTMX
+         ******************************************************************************/
+
+	public function pushUrl(string $url): static {
+		$this->withHeader('HX-Push-Url', $url);
+		return $this;
+	}
+
+	public function replaceUrl(string $url): static {
+		$this->withHeader('HX-Replace-Url', $url);			
+		return $this;
+	}
+
+	public function reswap(string $option): static {
+		$this->withHeader('HX-Reswap', $option);
+		return $this;
+	}
+
+	public function retarget(string $selector): static {
+		$this->withHeader('HX-Retarget', $selector);
+		return $this;
+	}
+
+	public function location(string $url): static {
+		$this->withHeader('HX-Location', $url);
+		return $this;
+	}
+
+	public function addTrigger(string $key, string|array|null $body = null): static {
+        	$this->triggers[$key] = $body;
+        	return $this;
+    	}
+
+	public function addTriggerAfterSettle(string $key, string|array|null $body = null): static {
+		$this->triggersAfterSettle[$key] = $body;
+		return $this;
+	}
+
+	public function addTriggerAfterSwap(string $key, string|array|null $body = null): static {
+		$this->triggersAfterSwap[$key] = $body;
+		return $this;
+	}
+
+	private function containsANonNullableElement(array $arr): bool {
+		return count($arr) !== count(array_filter($arr, 'is_null'));
+	}
+
+    	public static function makeStopPoll() : static {
+        	return self::make(self::STOP_POLL_CODE)->end('');
+    	}
+
+	private function appendTriggers(): void {
+
+		if (count($this->triggers)) {
+			$this->withHeader('HX-Trigger', $this->encodeTriggers($this->triggers));
+		}
+
+		if (count($this->triggersAfterSettle)) {
+			$this->withHeader('HX-Trigger-After-Settle', $this->encodeTriggers($this->triggersAfterSettle));
+		}
+
+		if (count($this->triggersAfterSwap)) {
+			$this->withHeader('HX-Trigger-After-Swap', $this->encodeTriggers($this->triggersAfterSwap));
+		}
+
+        	$this->triggersAppended = TRUE;
+	}
+
+	private function encodeTriggers(array $triggers): string {
+
+		if ($this->containsANonNullableElement($triggers)) {
+			return json_encode($triggers);
+		}
+
+		return implode(',', array_keys($triggers));
+	}
+	
 	/*******************************************************************************
 	 * Status
 	 ******************************************************************************/
