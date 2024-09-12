@@ -33,6 +33,8 @@ class Response implements ResponseInterface
 	use CookiesTrait;
 	use MessageTrait;
 
+	private bool $noDieOnEnd = FALSE;
+	
 	/****************************************************
  	 * HTMX - BEGIN
          ***************************************************/
@@ -296,6 +298,14 @@ class Response implements ResponseInterface
 		$this->headers->add($name, $value);
 	}
 
+	public function setNoDieOnEnd() : void {
+		$this->noDieOnEnd = TRUE;
+	}
+
+	public function unsetNoDieOnEnd() : void {
+		$this->noDieOnEnd = FALSE;
+	}
+	
 	/**
 	 * Helper to simply send a string response and end the response
 	 */
@@ -319,7 +329,12 @@ class Response implements ResponseInterface
 		}
 
 		// Output the response body
-		die((string)$response->getBody());	
+		$bodyStr = ((string)$response->getBody());
+		
+		echo $bodyStr;
+
+		if ($this->noDieOnEnd) return;
+		die(); 
 	}
 
 	/**
